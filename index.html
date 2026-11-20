@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CRITICAL HIT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1b1033; --ink2:#3a2466; --paper:#fff8e7; --paper2:#ffe9b8;
+  --red:#ff3b3b; --orange:#ff9f1c; --yellow:#ffd23f; --green:#2fd06a; --teal:#12c2b8;
+  --blue:#3a86ff; --purple:#8338ec; --pink:#ff2e88; --sky:#7ad7ff;
+  --px:"Press Start 2P", ui-monospace, monospace; --tx:"Pixelify Sans", "Trebuchet MS", sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:var(--tx);font-size:19px;color:var(--ink);font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0,"calt" 0;
+  background:#2a1258 repeating-linear-gradient(0deg,#2a1258 0 24px,#311566 24px 48px);}
+button,input,select{font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0,"calt" 0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:4px solid var(--yellow);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:14px}
+.screen{display:none}
+.screen.on{display:block}
+h1,h2,h3,.px{font-family:var(--px);font-weight:400;letter-spacing:.5px}
+h2{font-size:18px;margin:0 0 12px} h3{font-size:13px;margin:0 0 8px}
+.panel{background:var(--paper);border:4px solid var(--ink);border-radius:8px;box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 6px var(--blue),6px 6px 0 rgba(0,0,0,.35);padding:18px 20px}
+.btn{font-family:var(--px);font-size:12px;line-height:1.5;padding:12px 16px;border:4px solid var(--ink);border-radius:6px;background:var(--yellow);box-shadow:0 5px 0 var(--ink);transition:transform .06s}
+.btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn.red{background:var(--red);color:#fff} .btn.blue{background:var(--blue);color:#fff} .btn.green{background:var(--green)}
+.btn.pink{background:var(--pink);color:#fff} .btn.ghost{background:var(--paper)} .btn.purple{background:var(--purple);color:#fff}
+.btn:disabled{filter:grayscale(1);opacity:.55;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.muted{color:#5a4a7a} .small{font-size:15px}
+input,select{font-family:var(--tx);font-size:19px;padding:10px 12px;border:4px solid var(--ink);border-radius:6px;background:#fff;width:100%}
+label{font-family:var(--px);font-size:11px;display:block;margin:14px 0 6px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;color:#fff}
+.topbar .brand{font-family:var(--px);font-size:14px;color:var(--yellow);text-shadow:3px 3px 0 var(--red)}
+.topbar .who{font-size:16px;opacity:.95}
+.iconbtn{color:var(--ink);font-family:var(--px);font-size:10px;padding:8px 10px;border:3px solid var(--ink);border-radius:6px;background:var(--paper);box-shadow:0 3px 0 var(--ink)}
+
+/* ---------- title ---------- */
+#title{min-height:92vh;display:none;place-items:center;text-align:center}
+#title.on{display:grid}
+.logo{font-family:var(--px);font-size:clamp(34px,7vw,74px);line-height:1.15;color:var(--yellow);
+  text-shadow:4px 4px 0 var(--red),8px 8px 0 var(--ink);margin:0;transform:skew(-6deg)}
+.logo span{color:#fff;text-shadow:4px 4px 0 var(--blue),8px 8px 0 var(--ink)}
+.tag{font-family:var(--px);font-size:12px;color:#fff;margin:26px 0 34px;line-height:1.8}
+.blink{animation:blink 1.1s steps(2) infinite} @keyframes blink{50%{opacity:0}}
+.titlefloor{height:70px;margin-top:40px;background:repeating-linear-gradient(90deg,var(--pink) 0 40px,var(--purple) 40px 80px);
+  transform:perspective(200px) rotateX(55deg);border:4px solid var(--ink)}
+.title-mons{display:flex;gap:18px;justify-content:center;margin-top:24px;min-height:110px}
+.title-mons img{width:128px;height:128px;image-rendering:pixelated;animation:bob 1.6s ease-in-out infinite}
+.title-mons img:nth-child(2){animation-delay:.3s}.title-mons img:nth-child(3){animation-delay:.6s}
+@keyframes bob{50%{transform:translateY(-8px)}}
+
+/* ---------- cards ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+#gymGrid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.card{background:var(--paper);border:4px solid var(--ink);border-radius:8px;padding:14px;box-shadow:5px 5px 0 rgba(0,0,0,.35);text-align:left;position:relative}
+button.card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 rgba(0,0,0,.35)}
+.card .k{font-family:var(--px);font-size:10px;color:var(--purple)}
+.card .t{font-family:var(--tx);font-weight:700;font-size:22px;margin:6px 0;line-height:1.2;overflow-wrap:break-word}
+.card .d{font-size:16px;color:#4a3a6a}
+.card.done::after{content:"CLEARED";position:absolute;top:10px;right:10px;font-family:var(--px);font-size:9px;background:var(--green);border:3px solid var(--ink);padding:4px 6px;border-radius:4px}
+.badge{width:46px;height:46px;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);border:0;display:inline-block;
+  background:radial-gradient(circle at 35% 30%,#fff8 0 18%,transparent 20%),var(--c,#888);box-shadow:inset 0 0 0 4px var(--ink)}
+.badge.off{filter:grayscale(1) brightness(.7)}
+.mon{display:grid;place-items:center;gap:4px;padding:10px;text-align:center}
+.mon img{width:128px;height:128px;image-rendering:pixelated}
+.mon .nm{font-family:var(--px);font-size:10px}
+.mon.sel{background:var(--yellow);outline:4px solid var(--pink)}
+.chip{display:inline-block;font-family:var(--px);font-size:9px;padding:4px 6px;border:2px solid var(--ink);border-radius:4px;background:#fff;margin:2px}
+.sectionhead{color:#fff;font-family:var(--px);font-size:13px;margin:22px 0 10px;text-shadow:2px 2px 0 var(--ink)}
+
+/* ---------- battle ---------- */
+#battle .stage{position:relative;height:430px;border:4px solid var(--ink);border-radius:8px 8px 0 0;overflow:hidden;
+  background:linear-gradient(#58c8ff 0 30%,#8fe0ff 30% 46%,#c5f3ff 46% 52%,#7fdc6a 52% 54%,#5cc85a 54% 100%)}
+#battle .stage.gym{background:linear-gradient(#2b0f5e 0 18%,#4a1d9a 18% 40%,#7b2fd1 40% 52%,#ff5fb0 52% 54%,#ffd23f 54% 100%)}
+#battle .stage.elite{background:radial-gradient(#fff 1px,transparent 1.5px) 0 0/34px 34px,linear-gradient(#0b0630 0 52%,#3a86ff 52% 54%,#1a2c7a 54% 100%)}
+#battle .stage.champ{background:linear-gradient(#ff3b3b 0 20%,#ff9f1c 20% 40%,#ffd23f 40% 52%,#fff 52% 54%,#ffe9b8 54% 100%)}
+.plat{position:absolute;border-radius:50%;background:radial-gradient(ellipse at center,#b9f58a 0 55%,#6fbf3f 56% 70%,#3b7d22 71%);border:4px solid var(--ink)}
+.gym .plat{background:radial-gradient(ellipse at center,#fff2a8 0 55%,#ffb020 56% 70%,#c06010 71%)}
+.elite .plat{background:radial-gradient(ellipse at center,#a8d8ff 0 55%,#3a86ff 56% 70%,#1a3aa0 71%)}
+.champ .plat{background:radial-gradient(ellipse at center,#fff 0 55%,#ff9f1c 56% 70%,#c0401a 71%)}
+.plat.opp{width:270px;height:62px;right:70px;top:170px}
+.plat.me{width:320px;height:74px;left:40px;bottom:22px}
+.sprite{position:absolute;image-rendering:pixelated;transition:opacity .3s}
+#oppSprite{width:192px;height:192px;right:110px;top:14px}
+#meSprite{width:256px;height:256px;left:70px;bottom:-40px}
+.infobox{position:absolute;background:var(--paper);border:4px solid var(--ink);border-radius:8px 8px 8px 0;padding:8px 12px;min-width:300px;box-shadow:4px 4px 0 rgba(0,0,0,.3)}
+#oppBox{left:24px;top:22px} #meBox{right:24px;bottom:30px;border-radius:8px 8px 0 8px}
+.infobox .nm{font-family:var(--px);font-size:12px;display:flex;justify-content:space-between;gap:12px}
+.hpwrap{display:flex;align-items:center;gap:6px;margin-top:8px}
+.hpwrap b{font-family:var(--px);font-size:9px;color:var(--orange);background:var(--ink);padding:2px 4px;border-radius:3px}
+.hpbar{flex:1;height:12px;background:#3a3a3a;border:3px solid var(--ink);border-radius:6px;overflow:hidden}
+.hpbar i{display:block;height:100%;width:100%;background:var(--green);transition:width .6s steps(12)}
+.hpbar i.mid{background:var(--yellow)} .hpbar i.low{background:var(--red)}
+.hpnum{font-family:var(--px);font-size:10px;text-align:right;margin-top:6px}
+.charge{font-family:var(--px);font-size:9px;color:#fff;background:var(--red);padding:3px 5px;border-radius:3px;margin-top:6px;display:none;animation:blink .6s steps(2) infinite}
+.charge.on{display:inline-block}
+.balls{display:flex;gap:4px;margin-top:6px}
+.balls i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink);background:linear-gradient(var(--red) 0 45%,var(--ink) 45% 55%,#fff 55%)}
+.balls i.out{filter:grayscale(1);opacity:.4}
+.dock{display:grid;grid-template-columns:1fr 330px;border:4px solid var(--ink);border-top:0;border-radius:0 0 8px 8px;background:var(--ink)}
+.textbox{background:var(--paper);margin:6px;border:4px solid var(--orange);border-radius:6px;padding:16px 18px;min-height:132px;font-size:22px;line-height:1.45;cursor:pointer}
+.textbox .more{float:right;font-family:var(--px);font-size:12px;color:var(--red)}
+.menu{background:var(--paper);margin:6px 6px 6px 0;border:4px solid var(--blue);border-radius:6px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:center}
+.menu button{font-family:var(--px);font-size:11px;padding:12px 6px;border:3px solid var(--ink);border-radius:6px;background:#fff;box-shadow:0 3px 0 var(--ink);text-align:left}
+.menu button:hover{background:var(--yellow)}
+.menu button:disabled{opacity:.4;cursor:not-allowed}
+.moves{display:none;grid-template-columns:1fr 1fr;gap:8px;padding:10px;background:var(--paper);margin:6px;border:4px solid var(--orange);border-radius:6px;grid-column:1/-1}
+.moves.on{display:grid}
+.dock.picking .textbox,.dock.picking .menu{display:none!important}
+.move{font-family:var(--px);font-size:11px;line-height:1.5;padding:12px;border:3px solid var(--ink);border-radius:6px;background:var(--c,#fff);box-shadow:0 4px 0 var(--ink);text-align:left;color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.45)}
+.move .pp{display:block;font-size:9px;margin-top:6px;opacity:.95}
+.move .se{display:inline-block;background:var(--yellow);color:var(--ink);text-shadow:none;padding:2px 4px;border-radius:3px;font-size:8px;margin-left:6px}
+.move:disabled{filter:grayscale(1);opacity:.5}
+.shake{animation:shake .35s steps(4)} @keyframes shake{25%{transform:translate(-8px,2px)}50%{transform:translate(8px,-2px)}75%{transform:translate(-5px,0)}}
+.hit{animation:hit .5s steps(2) 3} @keyframes hit{50%{opacity:0}}
+.lunge-me{animation:lme .35s} @keyframes lme{50%{transform:translate(40px,-20px)}}
+.lunge-opp{animation:lop .35s} @keyframes lop{50%{transform:translate(-40px,20px)}}
+.faint{animation:faint .6s forwards} @keyframes faint{to{transform:translateY(80px);opacity:0}}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.flash.on{animation:fl .45s} @keyframes fl{20%{opacity:.9}100%{opacity:0}}
+.wipe{position:fixed;inset:0;z-index:50;pointer-events:none;display:none}
+.wipe.on{display:block}
+.wipe i{position:absolute;left:0;right:0;height:12.5%;background:var(--ink);transform:scaleX(0);animation:wipe .7s forwards}
+@keyframes wipe{0%{transform:scaleX(0)}45%,60%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+.reduce *{animation:none!important;transition:none!important}
+
+/* ---------- question overlay ---------- */
+.qover{position:fixed;inset:0;background:rgba(27,16,51,.86);display:none;padding:24px 16px;z-index:30;overflow:auto}
+.qover .qcard{max-width:900px;margin:4vh auto}
+.qover.on{display:block}
+.qcard{background:var(--paper);border:4px solid var(--ink);border-radius:8px;padding:18px 20px;box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 6px var(--pink)}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.qtext{font-size:23px;line-height:1.4;margin:6px 0 14px;font-weight:600}
+.choices{display:grid;gap:10px}
+.choice{display:flex;gap:12px;align-items:flex-start;text-align:left;font-size:20px;line-height:1.35;padding:12px 14px;border:3px solid var(--ink);border-radius:6px;background:#fff;box-shadow:0 4px 0 var(--ink)}
+.choice .n{font-family:var(--px);font-size:12px;background:var(--ink);color:#fff;border-radius:4px;padding:5px 7px;flex:none;margin-top:2px}
+.choice:hover:not(:disabled){background:#fff3c4}
+.choice.right{background:#c8f7d6;border-color:#0d7a3a} .choice.wrong{background:#ffd0d0;border-color:#a01818}
+.choice:disabled{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;border:3px solid var(--ink);border-radius:6px;font-size:19px;line-height:1.4;display:none}
+.fb.on{display:block} .fb.good{background:#e3fbe9} .fb.bad{background:#ffe6e6}
+.fb b{font-family:var(--px);font-size:12px;display:block;margin-bottom:6px}
+
+/* ---------- report ---------- */
+table{border-collapse:collapse;width:100%;font-size:17px}
+th,td{border:3px solid var(--ink);padding:8px 10px;text-align:left;vertical-align:middle}
+th{font-family:var(--px);font-size:10px;background:var(--ink);color:#fff}
+.bar{height:14px;background:#e6dcc8;border:2px solid var(--ink);border-radius:4px;overflow:hidden;min-width:120px}
+.bar i{display:block;height:100%}
+.lvl{font-family:var(--px);font-size:10px;padding:4px 6px;border:2px solid var(--ink);border-radius:4px;white-space:nowrap}
+.big{font-family:var(--px);font-size:26px}
+.statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0 18px}
+.stat{background:#fff;border:3px solid var(--ink);border-radius:6px;padding:10px;text-align:center}
+.stat .px{font-size:9px;color:var(--purple);display:block;margin-bottom:6px}
+.codebox{font-family:var(--px);font-size:14px;background:var(--ink);color:var(--yellow);padding:12px;border-radius:6px;display:inline-block;letter-spacing:1px}
+.modal{position:fixed;inset:0;background:rgba(10,4,30,.7);display:none;place-items:center;z-index:40;padding:16px}
+.modal.on{display:grid}
+.modal .panel{max-width:520px;width:100%}
+.toggle{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:2px dashed #c9b99a;font-size:18px}
+.notice{background:var(--paper2);border:3px solid var(--ink);border-radius:6px;padding:10px 12px;margin:10px 0;font-size:16px}
+.hof{text-align:center;color:#fff}
+.hof .logo{font-size:40px}
+@media print{
+  body{background:#fff} .screen{display:none!important} #report{display:block!important}
+  .noprint,.topbar{display:none!important} .panel{box-shadow:none;border:2px solid #000}
+}
+</style>
+</head>
+<body>
+<div class="wipe" id="wipe" aria-hidden="true"><i style="top:0"></i><i style="top:12.5%;animation-delay:.03s"></i><i style="top:25%;animation-delay:.06s"></i><i style="top:37.5%;animation-delay:.09s"></i><i style="top:50%;animation-delay:.12s"></i><i style="top:62.5%;animation-delay:.15s"></i><i style="top:75%;animation-delay:.18s"></i><i style="top:87.5%;animation-delay:.21s"></i></div>
+
+<!-- TITLE -->
+<section id="title" class="screen on">
+  <div>
+    <h1 class="logo">CRITICAL<br><span>HIT!</span></h1>
+    <div class="tag">A MIDTERM REVIEW BATTLE<br>FOR WEST CTA CYBER</div>
+    <button class="btn red" id="pressStart" style="font-size:16px;padding:16px 26px"><span class="blink">PRESS START</span></button>
+    <div class="title-mons" id="titleMons"></div>
+    <div class="titlefloor"></div>
+  </div>
+</section>
+
+<!-- START -->
+<section id="start" class="screen wrap">
+  <div class="panel" style="max-width:620px;margin:30px auto">
+    <h2>NEW TRAINER</h2>
+    <p class="small muted" style="margin-top:0">Your name and period print on your report. Progress saves in this browser only.</p>
+    <label for="inName">YOUR NAME</label><input id="inName" maxlength="40" autocomplete="off">
+    <label for="inPeriod">CLASS PERIOD</label><input id="inPeriod" maxlength="12" autocomplete="off">
+    <label for="inClass">CLASS</label><select id="inClass"></select>
+    <div id="startMsg" class="notice" style="display:none"></div>
+    <div class="row" style="margin-top:20px;justify-content:space-between">
+      <button class="btn green" id="goStart">CONTINUE ▶</button>
+      <button class="iconbtn" id="teacherLoad" title="Teacher: try a CSV in this browser only">TEACHER: TEST A CSV</button>
+      <input type="file" id="teacherFile" accept=".csv,text/csv" style="display:none">
+    </div>
+  </div>
+</section>
+
+<!-- STARTER -->
+<section id="starter" class="screen wrap">
+  <div class="panel">
+    <h2>CHOOSE YOUR TEAM</h2>
+    <p class="small" style="margin-top:0">Pick <b>3</b> partners. Each one knows different moves, and every move is a topic from your class. Switch partners in battle to reach other topics.</p>
+    <div class="grid" id="starterGrid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))"></div>
+    <div class="row" style="margin-top:16px;justify-content:space-between">
+      <span id="pickCount" class="px" style="font-size:11px">0 / 3</span>
+      <button class="btn green" id="starterGo" disabled>LET'S GO ▶</button>
+    </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section id="map" class="screen wrap">
+  <div class="topbar">
+    <div><div class="brand">CRITICAL HIT!</div><div class="who" id="who"></div></div>
+    <div class="row" style="gap:8px">
+      <button class="iconbtn" id="btnSound" aria-pressed="false">SOUND: OFF</button>
+      <button class="iconbtn" id="btnOptions">OPTIONS</button>
+      <button class="iconbtn" id="btnSwitch">SWITCH CLASS</button>
+    </div>
+  </div>
+  <div id="resumeBox"></div>
+  <div class="panel" style="padding:14px 18px">
+    <div class="row" style="justify-content:space-between">
+      <div><h3 style="margin:0">BADGES</h3><div id="badgeRow" class="row" style="gap:8px;margin-top:8px"></div></div>
+      <div class="row" style="gap:8px">
+        <button class="btn blue" id="btnReport">MY REPORT</button>
+        <button class="btn ghost" id="btnTeam">TEAM</button>
+        <button class="btn ghost" id="btnDex">COLLECTION</button>
+      </div>
+    </div>
+    <div id="bankNote" class="small muted" style="margin-top:8px"></div>
+  </div>
+  <div class="sectionhead">▶ GYMS (ONE PER UNIT)</div>
+  <div class="grid" id="gymGrid"></div>
+  <div class="sectionhead">▶ MORE BATTLES</div>
+  <div class="grid" id="moreGrid"></div>
+</section>
+
+<!-- BATTLE -->
+<section id="battle" class="screen wrap">
+  <div class="stage" id="stage">
+    <div class="plat opp"></div><div class="plat me"></div>
+    <img class="sprite" id="oppSprite" alt="">
+    <img class="sprite" id="meSprite" alt="">
+    <div class="infobox" id="oppBox"><div class="nm"><span id="oppName"></span><span id="oppLv"></span></div>
+      <div class="hpwrap"><b>HP</b><div class="hpbar"><i id="oppHp"></i></div></div>
+      <div class="balls" id="oppBalls"></div><span class="charge" id="chargeTag">⚠ CHARGING</span></div>
+    <div class="infobox" id="meBox"><div class="nm"><span id="meName"></span><span id="meLv"></span></div>
+      <div class="hpwrap"><b>HP</b><div class="hpbar"><i id="meHp"></i></div></div>
+      <div class="hpnum" id="meHpNum"></div><div class="balls" id="meBalls"></div></div>
+    <div class="flash" id="flash"></div>
+    <div class="qover" id="qover" role="dialog" aria-modal="true" aria-label="Question">
+      <div class="qcard">
+        <div class="qhead"><span class="chip" id="qCat"></span><span class="chip" id="qDok"></span></div>
+        <div class="qtext" id="qText"></div>
+        <div class="choices" id="qChoices"></div>
+        <div class="fb" id="qFb" aria-live="polite"></div>
+        <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn green" id="qNext" style="display:none">CONTINUE ▶</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="dock">
+    <div class="textbox" id="tbox" aria-live="polite"></div>
+    <div class="menu" id="menu">
+      <button id="mFight">▶ FIGHT</button><button id="mBag">BAG</button>
+      <button id="mTeam">TEAM</button><button id="mRun">RUN</button>
+    </div>
+    <div class="moves" id="moves"></div>
+  </div>
+</section>
+
+<!-- REVIEW -->
+<section id="review" class="screen wrap">
+  <div class="topbar"><div class="brand">REVIEW CENTER</div><button class="iconbtn" data-back>◀ MAP</button></div>
+  <div class="panel" id="reviewPanel"></div>
+</section>
+
+<!-- TEAM / DEX -->
+<section id="dex" class="screen wrap">
+  <div class="topbar"><div class="brand" id="dexTitle">COLLECTION</div><button class="iconbtn" data-back>◀ MAP</button></div>
+  <div class="panel"><p class="small" id="dexHelp" style="margin-top:0"></p><div class="grid" id="dexGrid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))"></div>
+  <div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn green" id="dexSave" style="display:none">SAVE TEAM</button></div></div>
+</section>
+
+<!-- HALL OF FAME -->
+<section id="hof" class="screen wrap">
+  <div class="hof" style="padding:40px 0">
+    <h1 class="logo">HALL OF<br><span>FAME</span></h1>
+    <p class="tag" id="hofText"></p>
+    <div class="title-mons" id="hofMons"></div>
+    <button class="btn red" data-back>BACK TO MAP</button>
+  </div>
+</section>
+
+<!-- REPORT -->
+<section id="report" class="screen wrap">
+  <div class="topbar noprint"><div class="brand">TRAINER REPORT</div>
+    <div class="row" style="gap:8px"><button class="iconbtn" id="btnPdf">EXPORT PDF</button><button class="iconbtn" id="btnPrint">PRINT</button><button class="iconbtn" data-back>◀ MAP</button></div></div>
+  <div class="panel" id="reportBody"></div>
+</section>
+
+<!-- OPTIONS -->
+<div class="modal" id="optModal" role="dialog" aria-modal="true" aria-label="Options">
+  <div class="panel">
+    <h2>OPTIONS</h2>
+    <div class="toggle"><span>Reduce motion</span><button class="iconbtn" id="oMotion"></button></div>
+    <div class="toggle"><span>Assist mode (take half damage)</span><button class="iconbtn" id="oAssist"></button></div>
+    <div class="toggle"><span>Sound effects</span><button class="iconbtn" id="oSound"></button></div>
+    <div class="toggle"><span>Reset progress for this class</span><button class="iconbtn" id="oReset" style="background:var(--red);color:#fff">RESET</button></div>
+    <div id="resetConfirm" class="notice" style="display:none">This erases this class's answers, badges and collection on this computer. <div class="row" style="margin-top:8px"><button class="btn red" id="oResetYes">YES, ERASE</button><button class="btn ghost" id="oResetNo">CANCEL</button></div></div>
+    <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn green" id="optClose">DONE</button></div>
+  </div>
+</div>
+
+<script>
+/* ===== CRITICAL HIT shared: CSV parsing, bank validation, completion codes ===== */
+var CH = window.CH || (window.CH = {});
+CH.REQUIRED = ["id","unit","topic","question","correct","wrong1"];
+CH.COLUMNS = ["id","unit","topic","term","dok","question","correct","wrong1","wrong2","wrong3","explanation","code"];
+
+CH.parseCSV = function (text) {
+  text = String(text || "").replace(/^﻿/, "");
+  var rows = [], row = [], f = "", q = false, i = 0, c;
+  while (i < text.length) {
+    c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
+      else f += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") { row.push(f); f = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(f); rows.push(row); row = []; f = "";
+    } else f += c;
+    i++;
+  }
+  if (f !== "" || row.length) { row.push(f); rows.push(row); }
+  return rows.filter(function (r) { return r.some(function (x) { return String(x).trim() !== ""; }); });
+};
+
+/* Returns {questions, errors:[{row,msg}], warnings:[{row,msg}], disabled, units:[{name,topics:[]}]} */
+CH.validateBank = function (text) {
+  var out = { questions: [], errors: [], warnings: [], disabled: 0, units: [] };
+  var rows = CH.parseCSV(text);
+  if (!rows.length) { out.errors.push({ row: 1, msg: "The file is empty." }); return out; }
+  var head = rows[0].map(function (h) { return String(h).trim().toLowerCase(); });
+  var miss = CH.REQUIRED.filter(function (h) { return head.indexOf(h) < 0; });
+  if (miss.length) { out.errors.push({ row: 1, msg: "Missing column(s): " + miss.join(", ") + ". Start from TEMPLATE.csv." }); return out; }
+  head.forEach(function (h) { if (h && CH.COLUMNS.indexOf(h) < 0) out.warnings.push({ row: 1, msg: 'Unknown column "' + h + '" is ignored.' }); });
+  var seen = {}, unitMap = {}, unitOrder = [];
+  for (var r = 1; r < rows.length; r++) {
+    var o = {}, line = r + 1;
+    head.forEach(function (h, k) { o[h] = String(rows[r][k] == null ? "" : rows[r][k]).trim(); });
+    if (!o.question) { out.disabled++; continue; }
+    var bad = [];
+    if (!o.id) bad.push("id is empty");
+    else if (seen[o.id]) bad.push('id "' + o.id + '" is also used on row ' + seen[o.id]);
+    if (!o.unit) bad.push("unit is empty");
+    if (!o.topic) bad.push("topic is empty");
+    if (!o.correct) bad.push("correct answer is empty");
+    var wrongs = [o.wrong1, o.wrong2, o.wrong3].filter(function (x) { return x; });
+    if (!wrongs.length) bad.push("needs at least wrong1");
+    var all = [o.correct].concat(wrongs).map(function (x) { return String(x).toLowerCase(); });
+    if (all.length !== new Set(all).size) bad.push("two choices are the same");
+    var dok = parseInt(o.dok, 10);
+    if (!o.dok) { dok = 1; }
+    else if (!(dok >= 1 && dok <= 3)) bad.push('dok must be 1, 2 or 3 (found "' + o.dok + '")');
+    if (bad.length) { out.errors.push({ row: line, msg: bad.join("; ") }); continue; }
+    if (o.id) seen[o.id] = line;
+    if (!o.dok) out.warnings.push({ row: line, msg: "dok is blank, using 1" });
+    if (!o.explanation) out.warnings.push({ row: line, msg: "no explanation (students see one after every answer)" });
+    if (o.question.length > 320) out.warnings.push({ row: line, msg: "question is long (" + o.question.length + " characters); it may need scrolling" });
+    [o.correct].concat(wrongs).forEach(function (ch) { if (ch.length > 110) out.warnings.push({ row: line, msg: 'a choice is long: "' + ch.slice(0, 40) + '…"' }); });
+    var q = { id: o.id, unit: o.unit, topic: o.topic, term: o.term || "", dok: dok, q: o.question, a: o.correct, w: wrongs, ex: o.explanation || "", code: o.code || "" };
+    out.questions.push(q);
+    if (!unitMap[q.unit]) { unitMap[q.unit] = { name: q.unit, topics: [] }; unitOrder.push(q.unit); }
+    if (unitMap[q.unit].topics.indexOf(q.topic) < 0) unitMap[q.unit].topics.push(q.topic);
+  }
+  out.units = unitOrder.map(function (u) { return unitMap[u]; });
+  out.units.forEach(function (u) {
+    if (u.topics.length > 12) out.warnings.push({ row: 0, msg: 'Unit "' + u.name + '" has ' + u.topics.length + " topics; only 12 fit on a team's move lists." });
+    u.topics.forEach(function (t) {
+      var n = out.questions.filter(function (q) { return q.unit === u.name && q.topic === t; }).length;
+      if (n < 4) out.warnings.push({ row: 0, msg: 'Topic "' + t + '" has only ' + n + " question(s); 6 or more keeps battles from repeating." });
+    });
+  });
+  return out;
+};
+
+CH.hash = function (s) {
+  var h = 2166136261;
+  for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36).toUpperCase().slice(-4).padStart(4, "0");
+};
+CH.norm = function (s) { return String(s || "").trim().toLowerCase().replace(/\s+/g, " "); };
+CH.makeCode = function (name, period, classId, answered, firstRight) {
+  return "CH-" + String(classId).toUpperCase() + "-" + answered + "-" + firstRight + "-" +
+    CH.hash(CH.norm(name) + "|" + CH.norm(period) + "|" + classId + "|" + answered + "|" + firstRight);
+};
+CH.checkCode = function (code, name, period) {
+  var m = /^CH-([A-Z0-9_-]+?)-(\d+)-(\d+)-([A-Z0-9]{4})$/.exec(String(code || "").trim().toUpperCase());
+  if (!m) return { ok: false, msg: "That doesn't look like a CRITICAL HIT code." };
+  var cls = m[1].toLowerCase(), ans = +m[2], right = +m[3];
+  var good = CH.makeCode(name, period, cls, ans, right) === "CH-" + m[1] + "-" + ans + "-" + right + "-" + m[4];
+  return { ok: good, cls: cls, answered: ans, right: right, pct: ans ? Math.round(right / ans * 100) : 0,
+    msg: good ? "Code matches this student." : "Code does NOT match that name and period (typo, or the code was changed)." };
+};
+
+</script>
+<script>
+(function(){
+"use strict";
+var $ = function(s){ return document.querySelector(s); };
+var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+var FAST = /[?&]fast=1/.test(location.search);
+var SPRITE_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-iii/";
+var GQL = "https://graphql.pokeapi.co/v1beta2";
+var REST = "https://pokeapi.co/api/v2/pokemon/";
+var COLORS = ["#ff3b3b","#3a86ff","#8338ec","#12a59c","#ff7a00","#ff2e88","#2f9e44","#c2255c","#1971c2","#e8590c","#7048e8","#0ca678"];
+var DMG = {1:20,2:28,3:36}, COUNTER = 22, CHARGE_DMG = 40, PP = 5;
+var ATTACKS = ["PACKET FLOOD","PORT SCAN","BRUTE FORCE","KEYLOGGER","BUFFER OVERFLOW","SQL SLAM","WORM BITE","PING STORM","CACHE POISON","SESSION HIJACK"];
+var CHARGES = ["ZERO-DAY BLAST","HYPER FLOOD","ROOTKIT SURGE","RANSOM WAVE"];
+var LEADERS = ["LEADER ADA","LEADER KEV","LEADER MAYA","LEADER RAJ","LEADER LUZ","LEADER OTTO","LEADER NIA","LEADER BEN","LEADER ZOE","LEADER IKE"];
+var ELITE = ["ELITE DAX","ELITE ROSA","ELITE VANCE","ELITE JUNO"];
+var STARTERS = ["p1","p4","p7","p152","p155","p158","p252","p255","p258","o6","o3","o2"];
+var WILD = [10,13,16,19,25,27,29,32,35,37,39,41,43,46,48,50,52,54,56,58,60,63,66,69,72,74,77,79,81,84,86,90,92,96,98,100,102,104,109,111,116,118,120,129,133,138,140,147,161,163,165,167,170,172,173,174,175,177,179,183,187,190,191,194,200,204,206,209,211,213,216,218,220,222,223,225,228,231,234,239,240,241,246,261,263,265,270,273,276,278,280,283,285,287,290,293,296,298,300,302,304,307,309,311,312,313,315,316,318,320,322,325,327,328,331,333,335,337,339,341,343,345,349,351,353,355,357,359,361,363,366,369,370,371,374];
+
+/* ===================== ORIGINAL CREATURES (code-drawn pixel art) ===================== */
+var ORIG = [
+ {name:"FIREWYRM", type:"FIREWALL", hp:1.05, pal:["#ff4a2a","#b8261a","#ffb020","#c46a10","#ffe08a"], body:[24,31,12,10], head:[24,16,8], parts:["wings","horns","tail","flame","belly","legs"]},
+ {name:"DDOSAUR", type:"FLOOD", hp:1.15, pal:["#3fc45a","#23803a","#ffd23f","#c79a12","#d8ffb0"], body:[23,31,13,11], head:[22,15,8], parts:["spikes","tail","belly","legs"]},
+ {name:"CRYPTOWL", type:"CRYPTO", hp:1.0, pal:["#8a4dff","#5326b8","#ffd23f","#c79a12","#e8dcff"], body:[24,30,11,12], head:[24,15,9], parts:["wings","tufts","beak","belly","lock","feet"]},
+ {name:"ROOTKAT", type:"ROOT", hp:0.95, pal:["#2b2f4a","#151829","#12e0c8","#0a8f80","#5a6390"], body:[24,32,10,9], head:[24,18,9], parts:["ears","tail","belly","legs","stripe"]},
+ {name:"RANSOMOTH", type:"MALWARE", hp:1.0, pal:["#ffcf3a","#c4900e","#ff2e88","#a8105a","#fff1b8"], body:[24,29,6,12], head:[24,15,7], parts:["mothwings","antenna","belly"]},
+ {name:"TROJHORSE", type:"MALWARE", hp:1.1, pal:["#c8823a","#86501c","#ff3b3b","#a01818","#f2c98a"], body:[22,31,13,9], head:[34,17,7], parts:["mane","legs4","tail","ears","plank"]},
+ {name:"PING-GUIN", type:"NETWORK", hp:1.0, pal:["#2b6fff","#163fa0","#ff9f1c","#c46a10","#ffffff"], body:[24,30,11,13], head:[24,15,9], parts:["flippers","beak","belly","feet","antenna"]},
+ {name:"HASHHOUND", type:"CRYPTO", hp:1.05, pal:["#a9b4c8","#6a7690","#ff3b3b","#a01818","#eef2f8"], body:[24,32,12,9], head:[24,18,9], parts:["floppy","tail","belly","legs","collar"]},
+ {name:"PACKRAT", type:"NETWORK", hp:0.9, pal:["#9a8a7a","#5e5042","#ff7ab8","#c2407a","#e8ddd0"], body:[24,33,10,8], head:[24,22,8], parts:["roundears","longtail","belly","legs","packet"]},
+ {name:"BOTNETLE", type:"MALWARE", hp:1.05, pal:["#12b886","#087a58","#ff3b3b","#a01818","#c3fae8"], body:[24,30,13,11], head:[24,18,7], parts:["antenna","spots","legs6"]},
+ {name:"PROXYFOX", type:"NETWORK", hp:0.95, pal:["#ff8a1c","#c25a08","#ffffff","#c8c8c8","#fff0d8"], body:[23,32,10,8], head:[24,19,9], parts:["ears","bushytail","belly","legs","mask"]},
+ {name:"KERNELION", type:"ROOT", hp:1.2, pal:["#ffc21c","#c4860a","#ff4a2a","#a8261a","#fff1b8"], body:[24,32,12,10], head:[24,17,8], parts:["mane","tail","belly","legs","crown"]}
+];
+var SPRITE_CACHE = {};
+function drawOriginal(idx, back){
+  var key = idx + (back?"b":"f"); if (SPRITE_CACHE[key]) return SPRITE_CACHE[key];
+  var d = ORIG[idx], N = 48, g = new Array(N*N).fill(0);
+  function set(x,y,v){ x=Math.round(x); y=Math.round(y); if(x>=0&&y>=0&&x<N&&y<N) g[y*N+x]=v; }
+  function get(x,y){ return (x<0||y<0||x>=N||y>=N)?0:g[y*N+x]; }
+  function ell(cx,cy,rx,ry,v){ for(var y=Math.floor(cy-ry);y<=cy+ry;y++)for(var x=Math.floor(cx-rx);x<=cx+rx;x++){var dx=(x-cx)/rx,dy=(y-cy)/ry;if(dx*dx+dy*dy<=1)set(x,y,v);} }
+  function rect(x,y,w,h,v){ for(var j=0;j<h;j++)for(var i=0;i<w;i++)set(x+i,y+j,v); }
+  function tri(a,b,c,v){ var minx=Math.min(a[0],b[0],c[0]),maxx=Math.max(a[0],b[0],c[0]),miny=Math.min(a[1],b[1],c[1]),maxy=Math.max(a[1],b[1],c[1]);
+    function s(p,q,r){return (p[0]-r[0])*(q[1]-r[1])-(q[0]-r[0])*(p[1]-r[1]);}
+    for(var y=miny;y<=maxy;y++)for(var x=minx;x<=maxx;x++){var p=[x,y],d1=s(p,a,b),d2=s(p,b,c),d3=s(p,c,a);if(!((d1<0||d2<0||d3<0)&&(d1>0||d2>0||d3>0)))set(x,y,v);} }
+  var bx=d.body[0],by=d.body[1],rx=d.body[2],ry=d.body[3],hx=d.head[0],hy=d.head[1],hr=d.head[2];
+  var P = function(n){ return d.parts.indexOf(n) >= 0; };
+  // behind-body parts
+  if(P("wings")){ ell(bx-rx-1,by-5,6,9,2); ell(bx+rx+1,by-5,6,9,2); }
+  if(P("mothwings")){ ell(bx-11,by-7,10,9,2); ell(bx+11,by-7,10,9,2); ell(bx-9,by+6,7,6,2); ell(bx+9,by+6,7,6,2); ell(bx-12,by-8,3,3,3); ell(bx+12,by-8,3,3,3); }
+  if(P("tail")){ for(var t=0;t<=1;t+=0.08) ell(bx+rx-2+t*11, by+3-t*t*16, 3.2-1.6*t, 3.2-1.6*t, 1); }
+  if(P("longtail")){ for(var t2=0;t2<=1;t2+=0.05) set(bx+rx-1+t2*14, by+4-Math.sin(t2*3)*6, 2); }
+  if(P("bushytail")){ ell(bx+rx+4,by-4,5,9,1); ell(bx+rx+5,by-11,3,3,3); }
+  if(P("flame")){ ell(bx+rx+9,by-15,3,4,2); ell(bx+rx+9,by-16,1.5,2,5); }
+  if(P("mane")){ ell(hx,hy+1,hr+4,hr+4,2); }
+  if(P("spikes")){ for(var k=-2;k<=2;k++) tri([bx+k*5-3,by-ry+3],[bx+k*5+3,by-ry+3],[bx+k*5,by-ry-4],2); }
+  // legs
+  if(P("legs")){ rect(bx-rx+3,by+ry-3,4,6,1); rect(bx+rx-7,by+ry-3,4,6,1); }
+  if(P("legs4")){ [-10,-5,4,9].forEach(function(o){ rect(bx+o,by+ry-3,3,8,1); }); }
+  if(P("legs6")){ [-11,-4,3].forEach(function(o){ rect(bx+o,by+ry-2,2,6,1); rect(bx+o+6,by+ry-2,2,6,1); }); }
+  if(P("feet")){ ell(bx-5,by+ry,3,2,2); ell(bx+5,by+ry,3,2,2); }
+  if(P("flippers")){ ell(bx-rx,by,3,8,1); ell(bx+rx,by,3,8,1); }
+  // body + head
+  ell(bx,by,rx,ry,1);
+  if(P("plank")){ for(var pl=-rx+2;pl<rx;pl+=4) rect(bx+pl,by-ry+2,1,ry*2-4,7); }
+  if(P("spots")){ rect(bx,by-ry,1,ry*2,6); ell(bx-6,by-3,2.5,2.5,2); ell(bx+6,by-3,2.5,2.5,2); ell(bx-7,by+4,2,2,2); ell(bx+7,by+4,2,2,2); }
+  if(P("stripe")){ rect(bx-1,by-ry+1,2,ry*2-2,2); }
+  ell(hx,hy,hr,hr*0.92,1);
+  if(P("horns")){ tri([hx-6,hy-hr+3],[hx-3,hy-hr+2],[hx-8,hy-hr-6],2); tri([hx+6,hy-hr+3],[hx+3,hy-hr+2],[hx+8,hy-hr-6],2); }
+  if(P("tufts")){ tri([hx-8,hy-4],[hx-3,hy-hr+1],[hx-9,hy-hr-5],1); tri([hx+8,hy-4],[hx+3,hy-hr+1],[hx+9,hy-hr-5],1); }
+  if(P("ears")){ tri([hx-8,hy-2],[hx-2,hy-hr+1],[hx-8,hy-hr-6],1); tri([hx+8,hy-2],[hx+2,hy-hr+1],[hx+8,hy-hr-6],1); tri([hx-7,hy-4],[hx-4,hy-hr+2],[hx-7,hy-hr-3],2); tri([hx+7,hy-4],[hx+4,hy-hr+2],[hx+7,hy-hr-3],2); }
+  if(P("roundears")){ ell(hx-7,hy-6,4,4,1); ell(hx+7,hy-6,4,4,1); ell(hx-7,hy-6,2,2,2); ell(hx+7,hy-6,2,2,2); }
+  if(P("floppy")){ ell(hx-hr,hy+2,3,6,2); ell(hx+hr,hy+2,3,6,2); }
+  if(P("antenna")){ rect(hx-4,hy-hr-5,1,6,6); rect(hx+3,hy-hr-5,1,6,6); ell(hx-4,hy-hr-6,1.6,1.6,2); ell(hx+3,hy-hr-6,1.6,1.6,2); }
+  if(P("crown")){ tri([hx-5,hy-hr+1],[hx-1,hy-hr+1],[hx-4,hy-hr-5],2); tri([hx-2,hy-hr+1],[hx+2,hy-hr+1],[hx,hy-hr-6],2); tri([hx+1,hy-hr+1],[hx+5,hy-hr+1],[hx+4,hy-hr-5],2); }
+  if(P("collar")){ rect(hx-6,hy+hr-2,13,2,2); }
+  if(!back){
+    if(P("belly")) ell(bx,by+2,rx*0.6,ry*0.65,3);
+    if(P("lock")){ rect(bx-3,by+1,7,5,2); rect(bx-2,by-2,1,3,2); rect(bx+2,by-2,1,3,2); rect(bx-1,by-3,3,1,2); set(bx,by+3,6); }
+    if(P("packet")){ rect(bx-4,by-1,9,6,2); set(bx-3,by,3); set(bx+3,by,3); set(bx,by+2,3); }
+    if(P("mask")){ rect(hx-7,hy-2,15,3,6); }
+    var ex=[hx-4,hx+3], ey=hy-1;
+    ex.forEach(function(x){ rect(x-1,ey-1,3,4,4); rect(x,ey,2,2,5); set(x-1,ey-1,4); });
+    if(P("beak")) tri([hx-2,hy+3],[hx+2,hy+3],[hx,hy+6],2);
+    else { set(hx-1,hy+4,6); set(hx,hy+5,6); set(hx+1,hy+4,6); }
+  }
+  // shading + outline
+  var pal = d.pal, out = g.slice();
+  for (var y=0;y<N;y++) for (var x=0;x<N;x++){
+    var v = g[y*N+x];
+    if ((v===1||v===2) && (get(x+2,y+2)===0 || get(x+1,y+3)===0)) out[y*N+x] = v===1 ? 8 : 9;
+    if (v===0 && (get(x+1,y)||get(x-1,y)||get(x,y+1)||get(x,y-1))) out[y*N+x] = 10;
+  }
+  var C = 64, OX = 8, OY = 14; var cv = document.createElement("canvas"); cv.width = cv.height = C; var cx = cv.getContext("2d");
+  var map = {1:pal[0],2:pal[2],3:pal[4],4:"#ffffff",5:"#1b1033",6:"#1b1033",7:pal[1],8:pal[1],9:pal[3],10:"#1b1033"};
+  for (var yy=0;yy<N;yy++) for (var xx=0;xx<N;xx++){ var c = map[out[yy*N+xx]]; if(c){ cx.fillStyle=c; cx.fillRect(OX+(back?N-1-xx:xx),OY+yy,1,1); } }
+  // tiny highlight on head
+  cx.fillStyle = "rgba(255,255,255,.55)"; cx.fillRect(OX+(back?N-1-(hx-hr+3)-1:hx-hr+3), OY+hy-hr+3, 2, 2);
+  return (SPRITE_CACHE[key] = cv.toDataURL());
+}
+
+/* ===================== STORAGE ===================== */
+function lsGet(k, d){ try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } }
+var PROFILE = lsGet("ch_v1_profile", {name:"", period:"", classId:"", sound:false, reduce:false, assist:false});
+var POKE = lsGet("ch_poke_v1", {});
+var S = null;     // per-class save
+var CLS = null;   // {id,name,questions,units}
+var CLASSES = [];
+function saveKey(){ return "ch_v1_" + CLS.id; }
+function blankSave(){ return {v:1, team:[], caught:[], log:{}, beaten:{}, cur:null, wildCount:0}; }
+function persist(){ if (CLS && S) lsSet(saveKey(), S); lsSet("ch_v1_profile", PROFILE); }
+
+/* ===================== SOUND ===================== */
+var AC = null;
+function beep(seq){
+  if (!PROFILE.sound) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    var t = AC.currentTime;
+    seq.forEach(function(n){ var o = AC.createOscillator(), gn = AC.createGain(); o.type = n[3] || "square"; o.frequency.setValueAtTime(n[0], t + n[1]);
+      gn.gain.setValueAtTime(0.06, t + n[1]); gn.gain.exponentialRampToValueAtTime(0.0001, t + n[1] + n[2]); o.connect(gn); gn.connect(AC.destination); o.start(t + n[1]); o.stop(t + n[1] + n[2] + 0.02); });
+  } catch(e){}
+}
+var SFX = {
+  blip:[[880,0,.05]], ok:[[660,0,.08],[990,.08,.12]], bad:[[220,0,.15,"sawtooth"],[160,.12,.2,"sawtooth"]],
+  hit:[[180,0,.08,"triangle"],[90,.05,.12,"square"]], crit:[[1200,0,.06],[1600,.06,.06],[2000,.12,.1]],
+  faint:[[600,0,.1],[400,.1,.1],[200,.2,.25]], win:[[523,0,.12],[659,.12,.12],[784,.24,.12],[1047,.36,.3]],
+  heal:[[700,0,.06],[900,.07,.06],[1100,.14,.1]]
+};
+function sfx(n){ beep(SFX[n]); }
+
+/* ===================== HELPERS ===================== */
+function shuffle(a){ a = a.slice(); for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function wait(ms){ return new Promise(function(r){ setTimeout(r, FAST ? Math.min(ms, 5) : ms); }); }
+function show(id){ $$(".screen").forEach(function(s){ s.classList.toggle("on", s.id === id); }); window.scrollTo(0,0); }
+function applyMotion(){ document.body.classList.toggle("reduce", !!PROFILE.reduce); }
+function wipe(){ if (PROFILE.reduce || FAST) return Promise.resolve(); var w = $("#wipe"); w.classList.remove("on"); void w.offsetWidth; w.classList.add("on"); return wait(380).then(function(){ setTimeout(function(){ w.classList.remove("on"); }, 400); }); }
+function title(s){ return String(s).toUpperCase().replace(/-/g, " "); }
+
+/* ===================== CREATURES ===================== */
+function origCreature(i){ var d = ORIG[i]; return {cid:"o"+i, name:d.name, types:[d.type], hpScale:d.hp, front:drawOriginal(i,false), back:drawOriginal(i,true), orig:true}; }
+function subFor(id){ return 3 + (id % 9); }
+function pokeCreature(id){
+  var p = POKE[id];
+  if (!p) { var s = origCreature(subFor(id)); s.cid = "p"+id; s.sub = true; return s; }
+  var hpScale = Math.max(0.85, Math.min(1.2, (p.hp || 60) / 65));
+  return {cid:"p"+id, name:title(p.name), types:p.types.map(function(t){ return title(t); }), hpScale:hpScale,
+    front:SPRITE_BASE+"emerald/"+id+".png", back:SPRITE_BASE+"ruby-sapphire/back/"+id+".png", subFront:drawOriginal(subFor(id),false), subBack:drawOriginal(subFor(id),true)};
+}
+function creature(cid){ return cid[0] === "o" ? origCreature(+cid.slice(1)) : pokeCreature(+cid.slice(1)); }
+var pokeFailed = false;
+function loadPoke(ids){
+  ids = ids.filter(function(i){ return !POKE[i]; });
+  if (!ids.length || pokeFailed) return Promise.resolve();
+  var q = "{ pokemon(where:{id:{_in:[" + ids.join(",") + "]}}){ id name pokemontypes{ type{ name } } pokemonstats{ base_stat stat{ name } } } }";
+  var ctl = ("AbortController" in window) ? new AbortController() : null;
+  var tm = setTimeout(function(){ if (ctl) ctl.abort(); }, 7000);
+  return fetch(GQL, {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({query:q}), signal: ctl ? ctl.signal : undefined})
+    .then(function(r){ if (!r.ok) throw new Error("gql " + r.status); return r.json(); })
+    .then(function(j){ (j.data.pokemon || []).forEach(storePoke); })
+    .catch(function(){ // fall back to REST, a few at a time
+      return Promise.all(ids.slice(0, 12).map(function(id){ return fetch(REST + id).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(p){
+        storePoke({id:p.id, name:p.name, pokemontypes:p.types.map(function(t){ return {type:{name:t.type.name}}; }), pokemonstats:p.stats.map(function(s){ return {base_stat:s.base_stat, stat:{name:s.stat.name}}; })}); }).catch(function(){}); }))
+        .then(function(){ if (ids.every(function(i){ return !POKE[i]; })) pokeFailed = true; });
+    })
+    .then(function(){ clearTimeout(tm); lsSet("ch_poke_v1", POKE); });
+}
+function storePoke(p){ var hp = 60; (p.pokemonstats||[]).forEach(function(s){ if (s.stat.name === "hp") hp = s.base_stat; }); POKE[p.id] = {name:p.name, types:(p.pokemontypes||[]).map(function(t){ return t.type.name; }), hp:hp}; }
+function setSprite(img, c, back){
+  img.onerror = null;
+  if (c.orig || c.sub) { img.src = back ? c.back : c.front; }
+  else { img.onerror = function(){ img.onerror = null; img.src = back ? c.subBack : c.subFront; }; img.src = back ? c.back : c.front; }
+  img.alt = c.name;
+}
+function monCard(c, extra){
+  var b = document.createElement("button"); b.className = "card mon"; b.type = "button";
+  b.innerHTML = '<img alt=""><span class="nm">' + esc(c.name) + '</span><span>' + c.types.map(function(t){ return '<span class="chip">' + esc(t) + '</span>'; }).join("") + '</span>' + (extra || "");
+  setSprite(b.querySelector("img"), c, false); return b;
+}
+
+/* ===================== BANK LOADING ===================== */
+function fetchText(url){ return fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "v=" + Date.now(), {cache:"no-store"}).then(function(r){ if (!r.ok) throw new Error(url + " (" + r.status + ")"); return r.text(); }); }
+function loadClasses(){
+  return fetchText("banks/classes.csv").then(function(t){
+    var rows = CH.parseCSV(t), head = rows[0].map(function(h){ return h.trim().toLowerCase(); });
+    CLASSES = rows.slice(1).map(function(r){ var o = {}; head.forEach(function(h,i){ o[h] = (r[i]||"").trim(); }); return o; }).filter(function(c){ return c.id && c.bank; });
+  });
+}
+function useBank(id, name, text){
+  var res = CH.validateBank(text);
+  CLS = {id:id, name:name, questions:res.questions, units:res.units, skipped:res.errors.length, disabled:res.disabled};
+  CLS.byId = {}; CLS.questions.forEach(function(q){ CLS.byId[q.id] = q; });
+  S = lsGet(saveKey(), null) || blankSave();
+  return res;
+}
+
+/* ===================== MASTERY ===================== */
+function qsIn(cat){ return CLS.questions.filter(function(q){ return q.unit === cat.unit && (!cat.topic || q.topic === cat.topic); }); }
+function stats(list){
+  var answered = 0, first = 0, recovered = 0, assisted = 0, review = 0;
+  list.forEach(function(q){ var r = S.log[q.id]; if (!r) return; answered++; if (r.f) first++; if (r.a) assisted++; if (!r.f && !r.a && r.ok) recovered++; if (!r.f && !r.ok) review++; });
+  return {total:list.length, answered:answered, first:first, pct: answered ? Math.round(first/answered*100) : null, recovered:recovered, assisted:assisted, review:review};
+}
+function isWeak(cat){ var s = stats(qsIn(cat)); return s.answered >= 3 && s.pct < 70; }
+function level(p, n){ if (p == null || n < 3) return {n:0, t:"NOT ENOUGH DATA", c:"#cfc4ae"}; if (p >= 90) return {n:4, t:"4 · MASTERED", c:"#2fd06a"}; if (p >= 75) return {n:3, t:"3 · PROFICIENT", c:"#3a86ff"}; if (p >= 60) return {n:2, t:"2 · DEVELOPING", c:"#ffd23f"}; return {n:1, t:"1 · BEGINNING", c:"#ff3b3b"}; }
+
+/* ===================== START FLOW ===================== */
+$("#pressStart").onclick = function(){ sfx("blip"); toStart(); };
+function toStart(){
+  show("start");
+  $("#inName").value = PROFILE.name || ""; $("#inPeriod").value = PROFILE.period || "";
+  var sel = $("#inClass"); sel.innerHTML = "";
+  if (!CLASSES.length) { sel.innerHTML = '<option value="">(no classes found)</option>'; }
+  CLASSES.forEach(function(c){ var o = document.createElement("option"); o.value = c.id; o.textContent = c.name || c.id; sel.appendChild(o); });
+  if (PROFILE.classId && CLASSES.some(function(c){ return c.id === PROFILE.classId; })) sel.value = PROFILE.classId;
+  $("#inName").focus();
+}
+function startMsg(t){ var m = $("#startMsg"); m.style.display = t ? "block" : "none"; m.innerHTML = t || ""; }
+$("#goStart").onclick = function(){
+  var name = $("#inName").value.trim(), per = $("#inPeriod").value.trim(), cid = $("#inClass").value;
+  if (!name) { startMsg("Type your name first."); $("#inName").focus(); return; }
+  if (!cid) { startMsg("No class selected."); return; }
+  PROFILE.name = name; PROFILE.period = per; PROFILE.classId = cid; persist();
+  var c = CLASSES.filter(function(x){ return x.id === cid; })[0];
+  startMsg("Loading " + esc(c.name) + "…");
+  fetchText("banks/" + c.bank).then(function(t){
+    useBank(c.id, c.name || c.id, t);
+    if (!CLS.questions.length) { startMsg("<b>" + esc(c.name) + "</b> has no questions yet. Ask your teacher, or pick another class."); return; }
+    startMsg(""); afterClass();
+  }).catch(function(e){ startMsg("Couldn't load the question bank (" + esc(e.message) + "). Check your connection and reload."); });
+};
+$("#teacherLoad").onclick = function(){ $("#teacherFile").click(); };
+$("#teacherFile").onchange = function(){
+  var f = this.files[0]; if (!f) return;
+  var rd = new FileReader();
+  rd.onload = function(){
+    var res = CH.validateBank(rd.result);
+    var msg = "<b>TEST MODE: " + esc(f.name) + "</b><br>" + res.questions.length + " questions, " + res.units.length + " unit(s). This only affects this browser; students won't see it.";
+    if (res.errors.length) msg += "<br><b>" + res.errors.length + " row(s) skipped:</b><br>" + res.errors.slice(0,8).map(function(e){ return "Row " + e.row + ": " + esc(e.msg); }).join("<br>");
+    if (!res.questions.length) { startMsg(msg + "<br>No usable questions."); return; }
+    if (!$("#inName").value.trim()) $("#inName").value = "Teacher";
+    PROFILE.name = $("#inName").value.trim(); PROFILE.period = $("#inPeriod").value.trim();
+    useBank("test", "TEST: " + f.name, rd.result);
+    startMsg(msg); setTimeout(afterClass, FAST ? 0 : 1600);
+  };
+  rd.readAsText(f); this.value = "";
+};
+function afterClass(){
+  if (S.team.length === 3) return loadPoke(teamIds()).then(toMap);
+  toStarter();
+}
+function teamIds(){ return S.team.concat(S.caught).filter(function(c){ return c[0] === "p"; }).map(function(c){ return +c.slice(1); }); }
+
+/* ===================== STARTER ===================== */
+var picked = [];
+function toStarter(){
+  show("starter"); picked = [];
+  var grid = $("#starterGrid"); grid.innerHTML = '<p class="small">Loading partners…</p>';
+  loadPoke(STARTERS.filter(function(c){ return c[0] === "p"; }).map(function(c){ return +c.slice(1); })).then(function(){
+    grid.innerHTML = "";
+    STARTERS.forEach(function(cid){
+      var c = creature(cid), b = monCard(c);
+      b.setAttribute("aria-pressed", "false");
+      b.onclick = function(){
+        var i = picked.indexOf(cid);
+        if (i >= 0) picked.splice(i, 1); else if (picked.length < 3) picked.push(cid); else return;
+        sfx("blip"); b.classList.toggle("sel", picked.indexOf(cid) >= 0); b.setAttribute("aria-pressed", picked.indexOf(cid) >= 0);
+        $("#pickCount").textContent = picked.length + " / 3"; $("#starterGo").disabled = picked.length !== 3;
+      };
+      grid.appendChild(b);
+    });
+  });
+}
+$("#starterGo").onclick = function(){ S.team = picked.slice(); picked.forEach(function(c){ if (S.caught.indexOf(c) < 0) S.caught.push(c); }); persist(); toMap(); };
+
+/* ===================== MAP ===================== */
+function toMap(){
+  show("map");
+  $("#who").textContent = PROFILE.name + (PROFILE.period ? " · Period " + PROFILE.period : "") + " · " + CLS.name;
+  $("#btnSound").textContent = "SOUND: " + (PROFILE.sound ? "ON" : "OFF"); $("#btnSound").setAttribute("aria-pressed", !!PROFILE.sound);
+  var note = CLS.questions.length + " questions in " + CLS.units.length + " unit" + (CLS.units.length === 1 ? "" : "s") + ".";
+  if (CLS.skipped) note += " " + CLS.skipped + " row(s) in the bank had errors and were skipped.";
+  if (pokeFailed) note += " Creature data couldn't load, so original creatures are filling in.";
+  $("#bankNote").textContent = note;
+  // badges
+  var br = $("#badgeRow"); br.innerHTML = "";
+  CLS.units.forEach(function(u, i){ var b = document.createElement("span"); b.className = "badge" + (S.beaten["gym:" + u.name] ? "" : " off"); b.style.setProperty("--c", COLORS[i % COLORS.length]); b.title = u.name + (S.beaten["gym:" + u.name] ? " badge" : " (not yet)"); br.appendChild(b); });
+  // resume
+  var rb = $("#resumeBox"); rb.innerHTML = "";
+  if (S.cur) { var d = document.createElement("div"); d.className = "notice"; d.style.marginBottom = "12px"; d.innerHTML = '<b>Battle in progress:</b> ' + esc(S.cur.title) + ' <button class="btn pink" id="btnResume" style="margin-left:10px">RESUME ▶</button>'; rb.appendChild(d); $("#btnResume").onclick = function(){ resumeBattle(S.cur); }; }
+  // gyms
+  var gg = $("#gymGrid"); gg.innerHTML = "";
+  CLS.units.forEach(function(u, i){
+    var st = stats(qsIn({unit:u.name})), done = S.beaten["gym:" + u.name];
+    var b = document.createElement("button"); b.className = "card" + (done ? " done" : ""); b.type = "button";
+    b.innerHTML = '<div class="row" style="gap:10px;flex-wrap:nowrap"><span class="badge" style="--c:' + COLORS[i % COLORS.length] + ';flex:none"></span><div><div class="k">GYM ' + (i+1) + ' · ' + LEADERS[i % LEADERS.length] + '</div><div class="t">' + esc(u.name) + '</div></div></div>' +
+      '<div class="d">' + u.topics.length + ' topics · ' + st.answered + '/' + st.total + ' seen' + (st.pct != null ? ' · ' + st.pct + '% first try' : '') + '</div>';
+    b.onclick = function(){ startBattle("gym", i); };
+    gg.appendChild(b);
+  });
+  var mg = $("#moreGrid"); mg.innerHTML = "";
+  var rev = CLS.questions.filter(function(q){ var r = S.log[q.id]; return r && !r.f && !r.ok; }).length;
+  [
+    {k:"WILD", t:"TALL GRASS", d:"Quick 1-on-1 battle with a wild creature. Win to catch it. (" + S.caught.length + " caught)", f:function(){ startBattle("wild"); }},
+    {k:"REVIEW", t:"REVIEW CENTER", d: rev ? rev + " missed question" + (rev === 1 ? "" : "s") + " waiting. Get them right to mark them recovered." : "Nothing to review right now.", f:toReview, done:false},
+    {k:"MIXED", t:"ELITE FOUR", d:"Four trainers in a row, questions from every unit.", f:function(){ startBattle("elite"); }, done:S.beaten.elite},
+    {k:"MOCK MIDTERM", t:"CHAMPION", d:"The final battle: about 25 questions across everything.", f:function(){ startBattle("champ"); }, done:S.beaten.champ}
+  ].forEach(function(x){ var b = document.createElement("button"); b.className = "card" + (x.done ? " done" : ""); b.type = "button"; b.innerHTML = '<div class="k">' + x.k + '</div><div class="t">' + x.t + '</div><div class="d">' + x.d + '</div>'; b.onclick = x.f; mg.appendChild(b); });
+}
+$("#btnSound").onclick = function(){ PROFILE.sound = !PROFILE.sound; persist(); sfx("ok"); toMap(); };
+$("#btnSwitch").onclick = function(){ toStart(); };
+$("#btnReport").onclick = toReport;
+$("#btnTeam").onclick = function(){ toDex(true); };
+$("#btnDex").onclick = function(){ toDex(false); };
+$$("[data-back]").forEach(function(b){ b.onclick = function(){ sfx("blip"); toMap(); }; });
+
+/* ===================== OPTIONS ===================== */
+function renderOpts(){ $("#oMotion").textContent = PROFILE.reduce ? "ON" : "OFF"; $("#oAssist").textContent = PROFILE.assist ? "ON" : "OFF"; $("#oSound").textContent = PROFILE.sound ? "ON" : "OFF"; }
+$("#btnOptions").onclick = function(){ renderOpts(); $("#resetConfirm").style.display = "none"; $("#optModal").classList.add("on"); $("#optClose").focus(); };
+$("#optClose").onclick = function(){ $("#optModal").classList.remove("on"); toMap(); };
+$("#oMotion").onclick = function(){ PROFILE.reduce = !PROFILE.reduce; applyMotion(); persist(); renderOpts(); };
+$("#oAssist").onclick = function(){ PROFILE.assist = !PROFILE.assist; persist(); renderOpts(); };
+$("#oSound").onclick = function(){ PROFILE.sound = !PROFILE.sound; persist(); renderOpts(); sfx("ok"); };
+$("#oReset").onclick = function(){ $("#resetConfirm").style.display = "block"; };
+$("#oResetNo").onclick = function(){ $("#resetConfirm").style.display = "none"; };
+$("#oResetYes").onclick = function(){ S = blankSave(); persist(); $("#optModal").classList.remove("on"); toStarter(); };
+
+/* ===================== COLLECTION / TEAM ===================== */
+var teamDraft = [];
+function toDex(teamMode){
+  show("dex"); $("#dexTitle").textContent = teamMode ? "CHOOSE TEAM" : "COLLECTION";
+  $("#dexHelp").textContent = teamMode ? "Pick any 3 creatures you've caught. Order = who goes out first." : "Every creature you've caught in this class: " + S.caught.length + ". Win wild battles and gyms to catch more.";
+  $("#dexSave").style.display = teamMode ? "inline-block" : "none";
+  teamDraft = S.team.slice();
+  var g = $("#dexGrid"); g.innerHTML = "";
+  loadPoke(teamIds()).then(function(){
+    S.caught.forEach(function(cid){
+      var b = monCard(creature(cid)); if (teamDraft.indexOf(cid) >= 0) b.classList.add("sel");
+      if (teamMode) b.onclick = function(){ var i = teamDraft.indexOf(cid); if (i >= 0) teamDraft.splice(i,1); else if (teamDraft.length < 3) teamDraft.push(cid); b.classList.toggle("sel", teamDraft.indexOf(cid) >= 0); $("#dexSave").disabled = teamDraft.length !== 3; sfx("blip"); };
+      else b.disabled = false;
+      g.appendChild(b);
+    });
+    $("#dexSave").disabled = teamDraft.length !== 3;
+  });
+}
+$("#dexSave").onclick = function(){ S.team = teamDraft.slice(); persist(); sfx("ok"); toMap(); };
+
+/* ===================== BATTLE ===================== */
+var B = null, busy = false;
+function catsFor(kind, unitIdx){
+  if (kind === "gym") { var u = CLS.units[unitIdx]; return u.topics.map(function(t){ return {label:t, unit:u.name, topic:t}; }); }
+  if (CLS.units.length >= 2) return CLS.units.map(function(u){ return {label:u.name, unit:u.name}; });
+  var u0 = CLS.units[0]; return u0.topics.map(function(t){ return {label:t, unit:u0.name, topic:t}; });
+}
+function moveSet(i, n){ if (n <= 4) { var a = []; for (var k=0;k<n;k++) a.push(k); return a; } var off = (i * Math.ceil(n/3)) % n, m = []; for (var j=0;j<4;j++) m.push((off + j) % n); return m; }
+function oppMon(cid, hpBase, lv){ var c = creature(cid), max = Math.round(hpBase * (c.hpScale || 1)); return {cid:cid, name:c.name, hp:max, max:max, lv:lv}; }
+function startBattle(kind, unitIdx){
+  sfx("blip");
+  var ids = [], plan = {kind:kind, unitIdx:unitIdx}, opp = [], trainers = [];
+  if (kind === "wild") { var wid = WILD[Math.floor(Math.random()*WILD.length)]; ids.push(wid); plan.make = function(){ opp.push(oppMon("p"+wid, 70, 5 + Math.floor(Math.random()*20))); }; plan.title = "Wild battle"; }
+  if (kind === "gym") {
+    var a = WILD[(unitIdx*17+3) % WILD.length], b2 = WILD[(unitIdx*29+11) % WILD.length]; ids.push(a, b2);
+    plan.make = function(){ var lv = 12 + unitIdx*6; opp.push(oppMon("p"+a, 100, lv), oppMon("p"+b2, 100, lv+1), oppMon("o"+(unitIdx % 11), 110, lv+3)); trainers = [LEADERS[unitIdx % LEADERS.length]]; };
+    plan.title = "Gym " + (unitIdx+1) + ": " + CLS.units[unitIdx].name;
+  }
+  if (kind === "elite") { plan.make = function(){ [4,8,1,9].forEach(function(o,i){ opp.push(oppMon("o"+o, 130, 50+i*2)); }); trainers = ELITE; }; plan.title = "Elite Four"; }
+  if (kind === "champ") { plan.make = function(){ [5,0,7,11].forEach(function(o,i){ opp.push(oppMon("o"+o, 160, 60+i*2)); }); trainers = ["CHAMPION REX"]; }; plan.title = "Champion"; }
+  return loadPoke(ids.concat(teamIds())).then(function(){
+    plan.make();
+    var cats = catsFor(kind, unitIdx);
+    var me = S.team.map(function(cid, i){ var c = creature(cid), max = Math.round(100 * (c.hpScale || 1)); var mv = moveSet(i, cats.length); return {cid:cid, name:c.name, hp:max, max:max, moves:mv, pp:mv.map(function(){ return PP; })}; });
+    B = {kind:kind, unitIdx:unitIdx, title:plan.title, cats:cats, opp:opp, oi:0, me:me, mi:0, turn:0, streak:0, charge:null, items:{potion:2, lens:1}, lens:false, used:{}, trainers:trainers, done:false};
+    S.cur = B; persist();
+    return wipe().then(function(){ enterBattle(true); });
+  });
+}
+function resumeBattle(cur){ B = cur; loadPoke(teamIds().concat(B.opp.filter(function(o){ return o.cid[0]==="p"; }).map(function(o){ return +o.cid.slice(1); }))).then(function(){ wipe().then(function(){ enterBattle(false); }); }); }
+function trainerFor(i){ if (!B.trainers.length) return null; return B.trainers[Math.min(i, B.trainers.length - 1)]; }
+function enterBattle(fresh){
+  show("battle");
+  $("#stage").className = "stage " + ({gym:"gym", elite:"elite", champ:"champ"}[B.kind] || "");
+  $("#mRun").disabled = B.kind !== "wild";
+  hideMoves(); drawAll();
+  var o = B.opp[B.oi], tr = trainerFor(B.oi);
+  var intro = fresh ? (B.kind === "wild" ? "A wild " + o.name + " appeared!" : tr + " wants to battle!") : "Battle resumed!";
+  busy = true;
+  say(intro).then(function(){ return fresh && tr ? say(tr + " sent out " + o.name + "!") : null; })
+    .then(function(){ return say("Go! " + B.me[B.mi].name + "!"); })
+    .then(function(){ busy = false; prompt(); });
+}
+function hpClass(el, p){ el.style.width = Math.max(0, p) + "%"; el.className = p <= 20 ? "low" : p <= 50 ? "mid" : ""; }
+function drawAll(){
+  var o = B.opp[B.oi], m = B.me[B.mi], oc = creature(o.cid), mc = creature(m.cid);
+  setSprite($("#oppSprite"), oc, false); setSprite($("#meSprite"), mc, true);
+  $("#oppSprite").className = "sprite"; $("#meSprite").className = "sprite";
+  $("#oppSprite").style.opacity = o.hp > 0 ? 1 : 0; $("#meSprite").style.opacity = m.hp > 0 ? 1 : 0;
+  $("#oppName").textContent = o.name; $("#oppLv").textContent = "Lv" + o.lv;
+  $("#meName").textContent = m.name; $("#meLv").textContent = "";
+  hpClass($("#oppHp"), o.hp / o.max * 100); hpClass($("#meHp"), m.hp / m.max * 100);
+  $("#meHpNum").textContent = Math.max(0, m.hp) + " / " + m.max;
+  $("#chargeTag").classList.toggle("on", !!B.charge);
+  $("#oppBalls").innerHTML = B.opp.length > 1 ? B.opp.map(function(x){ return '<i class="' + (x.hp <= 0 ? "out" : "") + '"></i>'; }).join("") : "";
+  $("#meBalls").innerHTML = B.me.map(function(x){ return '<i class="' + (x.hp <= 0 ? "out" : "") + '"></i>'; }).join("");
+}
+var sayResolve = null;
+function say(text){
+  return new Promise(function(res){
+    var tb = $("#tbox"); tb.innerHTML = ""; var i = 0, done = false, timer = null;
+    var finish = function(){ if (done) return; done = true; clearInterval(timer); tb.innerHTML = esc(text) + ' <span class="more blink">▼</span>'; sayResolve = function(){ sayResolve = null; res(); }; setTimeout(function(){ if (sayResolve) sayResolve(); }, FAST ? 5 : 1100); };
+    tb.onclick = function(){ if (!done) finish(); else if (sayResolve) sayResolve(); };
+    if (PROFILE.reduce || FAST) { finish(); return; }
+    timer = setInterval(function(){ i += 2; tb.textContent = text.slice(0, i); if (i >= text.length) finish(); }, 18);
+  });
+}
+function prompt(){ $("#tbox").innerHTML = "What will <b>" + esc(B.me[B.mi].name) + "</b> do?"; $("#menu").style.display = "grid"; $("#mFight").focus(); }
+function hideMoves(){ $(".dock").classList.remove("picking"); $("#moves").classList.remove("on"); $("#moves").innerHTML = ""; $("#menu").style.display = "grid"; }
+$("#mFight").onclick = function(){ if (busy) return; sfx("blip"); showMoves(); };
+function showMoves(){
+  var m = B.me[B.mi], mv = $("#moves"); mv.innerHTML = "";
+  m.moves.forEach(function(ci, k){
+    var c = B.cats[ci], weak = isWeak(c), b = document.createElement("button"); b.className = "move"; b.type = "button";
+    b.style.setProperty("--c", COLORS[ci % COLORS.length]);
+    b.innerHTML = (k+1) + ". " + esc(c.label.toUpperCase()) + (weak ? '<span class="se" title="You miss this topic often: double damage">⚡ x2</span>' : "") + '<span class="pp">PP ' + m.pp[k] + "/" + PP + "</span>";
+    b.disabled = m.pp[k] <= 0;
+    b.onclick = function(){ useMove(k); };
+    mv.appendChild(b);
+  });
+  if (m.pp.every(function(p){ return p <= 0; })) { var s = document.createElement("button"); s.className = "move"; s.style.setProperty("--c", "#555"); s.textContent = "STRUGGLE (random topic)"; s.onclick = function(){ useMove(-1); }; mv.appendChild(s); }
+  var back = document.createElement("button"); back.className = "move"; back.style.setProperty("--c", "#1b1033"); back.textContent = "◀ BACK"; back.onclick = function(){ hideMoves(); prompt(); }; mv.appendChild(back);
+  $("#menu").style.display = "none"; $(".dock").classList.add("picking"); mv.classList.add("on"); mv.querySelector("button:not(:disabled)").focus();
+}
+$("#mBag").onclick = function(){
+  if (busy) return; sfx("blip");
+  var mv = $("#moves"); mv.innerHTML = ""; var m = B.me[B.mi];
+  [["POTION", "Heal 50 HP · x" + B.items.potion, B.items.potion > 0 && m.hp < m.max, function(){ B.items.potion--; var h = Math.min(50, m.max - m.hp); m.hp += h; sfx("heal"); drawAll(); hideMoves(); busy = true; say(m.name + " recovered " + h + " HP!").then(function(){ busy = false; persist(); prompt(); }); }],
+   ["HINT LENS", (B.lens ? "Active for next question" : "Removes 2 wrong choices · x" + B.items.lens), B.items.lens > 0 && !B.lens, function(){ B.items.lens--; B.lens = true; hideMoves(); busy = true; say("The Hint Lens is ready. Your next question shows only 2 choices (marked assisted).").then(function(){ busy = false; persist(); prompt(); }); }]
+  ].forEach(function(it, k){ var b = document.createElement("button"); b.className = "move"; b.style.setProperty("--c", k ? "#8338ec" : "#2f9e44"); b.innerHTML = it[0] + '<span class="pp">' + it[1] + '</span>'; b.disabled = !it[2]; b.onclick = it[3]; mv.appendChild(b); });
+  var back = document.createElement("button"); back.className = "move"; back.style.setProperty("--c", "#1b1033"); back.textContent = "◀ BACK"; back.onclick = function(){ hideMoves(); prompt(); }; mv.appendChild(back);
+  $("#menu").style.display = "none"; $(".dock").classList.add("picking"); mv.classList.add("on");
+};
+$("#mTeam").onclick = function(){
+  if (busy) return; sfx("blip"); teamMenu(false);
+};
+function teamMenu(forced){
+  var mv = $("#moves"); mv.innerHTML = "";
+  B.me.forEach(function(m, i){
+    var b = document.createElement("button"); b.className = "move"; b.style.setProperty("--c", i === B.mi ? "#555" : "#3a86ff");
+    b.innerHTML = esc(m.name) + '<span class="pp">HP ' + Math.max(0,m.hp) + "/" + m.max + " · " + m.moves.map(function(ci){ return esc(B.cats[ci].label); }).join(", ") + "</span>";
+    b.disabled = m.hp <= 0 || i === B.mi;
+    b.onclick = function(){ var old = B.me[B.mi]; B.mi = i; hideMoves(); busy = true; drawAll(); persist();
+      (forced ? Promise.resolve() : say("Come back, " + old.name + "!")).then(function(){ return say("Go! " + m.name + "!"); }).then(function(){ busy = false; prompt(); }); };
+    mv.appendChild(b);
+  });
+  if (!forced) { var back = document.createElement("button"); back.className = "move"; back.style.setProperty("--c", "#1b1033"); back.textContent = "◀ BACK"; back.onclick = function(){ hideMoves(); prompt(); }; mv.appendChild(back); }
+  $("#menu").style.display = "none"; $(".dock").classList.add("picking"); mv.classList.add("on"); var f = mv.querySelector("button:not(:disabled)"); if (f) f.focus();
+}
+$("#mRun").onclick = function(){ if (busy || B.kind !== "wild") return; busy = true; hideMoves(); say("Got away safely!").then(function(){ busy = false; S.cur = null; persist(); wipe().then(toMap); }); };
+
+function pickQuestion(cat){
+  var pool = qsIn(cat), fresh = pool.filter(function(q){ return !B.used[q.id]; });
+  if (!fresh.length) { pool.forEach(function(q){ delete B.used[q.id]; }); fresh = pool; }
+  var tier = function(q){ var r = S.log[q.id]; if (!r) return 0; if (!r.f && !r.ok) return 1; return 2; };
+  var best = Math.min.apply(null, fresh.map(tier));
+  var q = pick(fresh.filter(function(x){ return tier(x) === best; }));
+  B.used[q.id] = 1; return q;
+}
+function record(q, correct, assisted){
+  var r = S.log[q.id];
+  if (!r) S.log[q.id] = {f: correct && !assisted ? 1 : 0, a: assisted ? 1 : 0, ok: correct ? 1 : 0, n: 1, t: Date.now()};
+  else { r.n++; r.ok = correct ? 1 : 0; r.t = Date.now(); }
+  persist();
+}
+function ask(q, catLabel, assisted){
+  return new Promise(function(res){
+    var ov = $("#qover"); ov.classList.add("on");
+    $("#qCat").textContent = catLabel.toUpperCase(); $("#qDok").textContent = "DOK " + q.dok + (assisted ? " · HINT LENS" : "");
+    $("#qText").textContent = q.q;
+    var choices = [q.a].concat(assisted ? [pick(q.w)] : q.w);
+    choices = shuffle(choices);
+    var box = $("#qChoices"); box.innerHTML = ""; var fb = $("#qFb"); fb.className = "fb"; fb.innerHTML = ""; $("#qNext").style.display = "none";
+    var answered = false, btns = [];
+    choices.forEach(function(ch, i){
+      var b = document.createElement("button"); b.type = "button"; b.className = "choice"; b.innerHTML = '<span class="n">' + (i+1) + '</span><span>' + esc(ch) + '</span>';
+      b.onclick = function(){ choose(i); }; box.appendChild(b); btns.push(b);
+    });
+    function choose(i){
+      if (answered) return; answered = true;
+      var ok = choices[i] === q.a;
+      btns.forEach(function(b, k){ b.disabled = true; if (choices[k] === q.a) b.classList.add("right"); else if (k === i) b.classList.add("wrong"); });
+      sfx(ok ? "ok" : "bad");
+      fb.className = "fb on " + (ok ? "good" : "bad");
+      fb.innerHTML = "<b>" + (ok ? "CORRECT!" : "NOT QUITE.") + "</b>" + (ok ? "" : "Answer: " + esc(q.a) + ". ") + esc(q.ex);
+      $("#qNext").style.display = "inline-block"; $("#qNext").focus();
+      $("#qNext").onclick = function(){ ov.classList.remove("on"); document.onkeydown = baseKeys; res(ok); };
+    }
+    document.onkeydown = function(e){
+      if (!answered && /^[1-4]$/.test(e.key) && btns[+e.key - 1]) { e.preventDefault(); choose(+e.key - 1); }
+      else if (answered && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); $("#qNext").click(); }
+    };
+    if (btns[0]) btns[0].focus();
+  });
+}
+function anim(el, cls, ms){ if (PROFILE.reduce) return wait(FAST ? 0 : 150); el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); return wait(ms).then(function(){ el.classList.remove(cls); }); }
+function flash(){ if (PROFILE.reduce) return; var f = $("#flash"); f.classList.remove("on"); void f.offsetWidth; f.classList.add("on"); }
+function useMove(k){
+  if (busy) return; busy = true; hideMoves();
+  var m = B.me[B.mi], ci, cat;
+  if (k >= 0) { m.pp[k]--; ci = m.moves[k]; } else ci = Math.floor(Math.random() * B.cats.length);
+  cat = B.cats[ci];
+  var assisted = B.lens; B.lens = false;
+  var q = pickQuestion(cat), o = B.opp[B.oi];
+  persist();
+  say(m.name + " used " + cat.label.toUpperCase() + "!").then(function(){ return ask(q, cat.label, assisted); }).then(function(ok){
+    record(q, ok, assisted);
+    B.turn++;
+    if (ok) return hitOpp(cat, q);
+    return missAndCounter();
+  }).then(function(){ return afterTurn(); });
+}
+function hitOpp(cat, q){
+  var m = B.me[B.mi], o = B.opp[B.oi];
+  B.streak++;
+  var se = isWeak(cat), crit = B.streak % 3 === 0;
+  var dmg = DMG[q.dok] || 20; if (se) dmg *= 2; if (crit) dmg = Math.round(dmg * 1.5);
+  var blocked = B.charge; B.charge = null;
+  return anim($("#meSprite"), "lunge-me", 350).then(function(){
+    sfx(crit ? "crit" : "hit"); if (crit) flash();
+    o.hp = Math.max(0, o.hp - dmg); drawAll(); return anim($("#oppSprite"), "hit", 500);
+  }).then(function(){ return crit ? say("A CRITICAL HIT! (" + B.streak + " in a row)") : null; })
+    .then(function(){ return se ? say("It's super effective! (weak topic, double damage)") : null; })
+    .then(function(){ return blocked ? say("You blocked " + blocked + "!") : null; });
+}
+function missAndCounter(){
+  var m = B.me[B.mi], o = B.opp[B.oi];
+  B.streak = 0;
+  var big = B.charge, dmg = big ? CHARGE_DMG : COUNTER; if (PROFILE.assist) dmg = Math.round(dmg / 2);
+  var atk = big || ATTACKS[(B.turn + o.name.length) % ATTACKS.length]; B.charge = null;
+  return say("…but it missed!").then(function(){ return say(o.name + " used " + atk + "!"); })
+    .then(function(){ return anim($("#oppSprite"), "lunge-opp", 350); })
+    .then(function(){ sfx("hit"); m.hp = Math.max(0, m.hp - dmg); drawAll(); anim($("#stage"), "shake", 350); return anim($("#meSprite"), "hit", 500); })
+    .then(function(){ return big ? say("Ouch! " + big + " hit hard.") : null; });
+}
+function afterTurn(){
+  var o = B.opp[B.oi], m = B.me[B.mi];
+  var p = Promise.resolve();
+  if (o.hp <= 0) {
+    p = p.then(function(){ sfx("faint"); return anim($("#oppSprite"), "faint", 600); }).then(function(){ $("#oppSprite").style.opacity = 0; return say(o.name + " fainted!"); }).then(function(){
+      if (B.oi < B.opp.length - 1) {
+        var prevTr = trainerFor(B.oi); B.oi++; B.charge = null; var no = B.opp[B.oi], tr = trainerFor(B.oi);
+        drawAll(); $("#oppSprite").style.opacity = 1;
+        return (tr && tr !== prevTr ? say(tr + " steps up!").then(function(){ return say(tr + " sent out " + no.name + "!"); }) : say((tr || "The trainer") + " sent out " + no.name + "!")).then(function(){ return "next"; });
+      }
+      return win();
+    });
+  } else if (m.hp <= 0) {
+    p = p.then(function(){ sfx("faint"); return anim($("#meSprite"), "faint", 600); }).then(function(){ $("#meSprite").style.opacity = 0; return say(m.name + " fainted!"); }).then(function(){
+      var alive = B.me.filter(function(x){ return x.hp > 0; });
+      if (!alive.length) return lose();
+      persist(); busy = false; $("#tbox").textContent = "Choose your next partner."; teamMenu(true); return "picked";
+    });
+  }
+  return p.then(function(r){
+    if (r === "won" || r === "lost" || r === "picked") return;
+    if (B.turn % 4 === 3 && !B.charge) { B.charge = pick(CHARGES); drawAll(); return say(B.opp[B.oi].name + " is charging " + B.charge + "! Answer right to block it!").then(function(){ busy = false; persist(); prompt(); }); }
+    busy = false; persist(); prompt();
+  });
+}
+function win(){
+  B.done = true; sfx("win");
+  var key = B.kind === "gym" ? "gym:" + CLS.units[B.unitIdx].name : B.kind;
+  var msgs = [];
+  if (B.kind === "wild") { var cid = B.opp[0].cid; if (S.caught.indexOf(cid) < 0) S.caught.push(cid); msgs.push("Gotcha! " + B.opp[0].name + " was caught!"); }
+  else {
+    S.beaten[key] = true;
+    var sig = B.opp[B.opp.length - 1].cid;
+    if (B.kind === "gym") { msgs.push("You beat " + trainerFor(0) + "! You earned the " + CLS.units[B.unitIdx].name + " badge!"); }
+    else if (B.kind === "elite") msgs.push("You beat the Elite Four!");
+    else msgs.push("You beat the Champion!");
+    if (S.caught.indexOf(sig) < 0) { S.caught.push(sig); msgs.push(B.opp[B.opp.length - 1].name + " joined your collection!"); }
+  }
+  S.cur = null; persist();
+  var p = Promise.resolve();
+  msgs.forEach(function(t){ p = p.then(function(){ return say(t); }); });
+  return p.then(function(){ return wait(500); }).then(function(){ return wipe(); }).then(function(){ if (B.kind === "champ") toHof(); else toMap(); return "won"; });
+}
+function lose(){
+  S.cur = null; persist();
+  return say("All your partners fainted…").then(function(){ return say("Your answers are saved. Heal up and try again!"); }).then(function(){ return wipe(); }).then(function(){ toMap(); return "lost"; });
+}
+function toHof(){
+  show("hof"); var s = stats(CLS.questions);
+  $("#hofText").innerHTML = esc(PROFILE.name) + " IS THE " + esc(CLS.name.toUpperCase()) + " CHAMPION!<br><br>FIRST-TRY ACCURACY: " + (s.pct == null ? "—" : s.pct + "%");
+  var hm = $("#hofMons"); hm.innerHTML = ""; S.team.forEach(function(cid){ var im = document.createElement("img"); setSprite(im, creature(cid), false); hm.appendChild(im); });
+}
+function baseKeys(e){
+  if (!$("#battle").classList.contains("on")) return;
+  if (sayResolve && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); sayResolve(); return; }
+  if (busy) return;
+  if ($("#moves").classList.contains("on") && /^[1-4]$/.test(e.key)) { var b = $$("#moves .move")[+e.key - 1]; if (b && !b.disabled) { e.preventDefault(); b.click(); } }
+  if (e.key === "Escape" && $("#moves").classList.contains("on")) { var bk = $$("#moves .move").filter(function(x){ return x.textContent.indexOf("BACK") >= 0; })[0]; if (bk) bk.click(); }
+}
+document.onkeydown = baseKeys;
+
+/* ===================== REVIEW CENTER ===================== */
+function toReview(){
+  show("review"); sfx("blip");
+  var list = shuffle(CLS.questions.filter(function(q){ var r = S.log[q.id]; return r && !r.f && !r.ok; }));
+  var P = $("#reviewPanel"), i = 0, fixed = 0;
+  if (!list.length) { P.innerHTML = "<h2>ALL CLEAR!</h2><p>No missed questions are waiting. Battle more to find what needs work.</p>"; return; }
+  function next(){
+    if (i >= list.length) { P.innerHTML = "<h2>REVIEW DONE</h2><p>You recovered <b>" + fixed + "</b> of " + list.length + " question(s). Recovered questions show on your report, but first-try accuracy doesn't change.</p><button class='btn green' data-backmap>BACK TO MAP</button>"; P.querySelector("[data-backmap]").onclick = toMap; return; }
+    var q = list[i], opts = shuffle([q.a].concat(q.w)), done = false;
+    P.innerHTML = '<div class="qhead"><span class="chip">' + esc(q.topic.toUpperCase()) + '</span><span class="chip">' + (i+1) + " / " + list.length + '</span></div><div class="qtext">' + esc(q.q) + '</div><div class="choices"></div><div class="fb"></div><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn green" style="display:none">NEXT ▶</button></div>';
+    var box = P.querySelector(".choices"), fb = P.querySelector(".fb"), nx = P.querySelector(".btn");
+    opts.forEach(function(o, k){ var b = document.createElement("button"); b.className = "choice"; b.innerHTML = '<span class="n">' + (k+1) + '</span><span>' + esc(o) + '</span>'; b.onclick = function(){
+      if (done) return; done = true; var ok = o === q.a; if (ok) fixed++; record(q, ok, false); sfx(ok ? "ok" : "bad");
+      $$("#reviewPanel .choice").forEach(function(x, j){ x.disabled = true; if (opts[j] === q.a) x.classList.add("right"); else if (j === k) x.classList.add("wrong"); });
+      fb.className = "fb on " + (ok ? "good" : "bad"); fb.innerHTML = "<b>" + (ok ? "RECOVERED!" : "STILL TRICKY.") + "</b>" + (ok ? "" : "Answer: " + esc(q.a) + ". ") + esc(q.ex);
+      nx.style.display = "inline-block"; nx.focus(); }; box.appendChild(b); });
+    nx.onclick = function(){ i++; next(); };
+  }
+  next();
+}
+
+/* ===================== REPORT ===================== */
+function reportData(){
+  var all = stats(CLS.questions);
+  var units = CLS.units.map(function(u){ return {name:u.name, s:stats(qsIn({unit:u.name})), topics:u.topics.map(function(t){ return {name:t, s:stats(qsIn({unit:u.name, topic:t}))}; })}; });
+  var terms = CLS.questions.filter(function(q){ var r = S.log[q.id]; return r && !r.f && !r.ok; }).map(function(q){ return {term:q.term || q.topic, topic:q.topic, code:q.code}; });
+  var seen = {}; terms = terms.filter(function(t){ var k = t.term + "|" + t.topic; if (seen[k]) return false; seen[k] = 1; return true; });
+  var badges = CLS.units.filter(function(u){ return S.beaten["gym:" + u.name]; }).length;
+  return {all:all, units:units, terms:terms, badges:badges, code:CH.makeCode(PROFILE.name, PROFILE.period, CLS.id, all.answered, all.first), date:new Date().toLocaleDateString()};
+}
+function toReport(){
+  show("report"); sfx("blip");
+  var R = reportData(), a = R.all, lv = level(a.pct, a.answered);
+  var h = '<div class="row" style="justify-content:space-between;align-items:flex-start"><div><h2 style="margin-bottom:6px">' + esc(PROFILE.name) + '</h2><div>' + esc(CLS.name) + (PROFILE.period ? " · Period " + esc(PROFILE.period) : "") + " · " + R.date + '</div></div><span class="lvl" style="background:' + lv.c + '">' + lv.t + '</span></div>';
+  h += '<div class="statrow"><div class="stat"><span class="px">FIRST-TRY</span><span class="big">' + (a.pct == null ? "—" : a.pct + "%") + '</span></div><div class="stat"><span class="px">QUESTIONS SEEN</span><span class="big">' + a.answered + '</span><div class="small">of ' + a.total + '</div></div><div class="stat"><span class="px">RECOVERED</span><span class="big">' + a.recovered + '</span></div><div class="stat"><span class="px">BADGES</span><span class="big">' + R.badges + '/' + CLS.units.length + '</span></div></div>';
+  h += '<table><thead><tr><th>UNIT / TOPIC</th><th>SEEN</th><th>FIRST TRY</th><th>MASTERY</th></tr></thead><tbody>';
+  R.units.forEach(function(u, ui){
+    var ul = level(u.s.pct, u.s.answered);
+    h += '<tr style="background:#f3e9d2"><td><b>' + esc(u.name) + '</b></td><td>' + u.s.answered + '/' + u.s.total + '</td><td>' + (u.s.pct == null ? "—" : u.s.pct + "%") + '</td><td><span class="lvl" style="background:' + ul.c + '">' + ul.t + '</span></td></tr>';
+    u.topics.forEach(function(t){ var tl = level(t.s.pct, t.s.answered);
+      h += '<tr><td style="padding-left:24px">' + esc(t.name) + '</td><td>' + t.s.answered + '/' + t.s.total + '</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar" style="flex:1"><i style="width:' + (t.s.pct || 0) + '%;background:' + tl.c + '"></i></div><span style="min-width:44px">' + (t.s.pct == null ? "—" : t.s.pct + "%") + '</span></div></td><td><span class="lvl" style="background:' + tl.c + '">' + tl.t + '</span></td></tr>'; });
+  });
+  h += '</tbody></table>';
+  h += '<h3 style="margin-top:20px">TERMS TO REVIEW</h3>' + (R.terms.length ? '<p>' + R.terms.map(function(t){ return '<span class="chip">' + esc(t.term) + (t.code ? " · " + esc(t.code) : "") + '</span>'; }).join(" ") + '</p>' : '<p class="muted">None right now. Nice work.</p>');
+  if (a.assisted) h += '<p class="small muted">' + a.assisted + ' question(s) were answered with the Hint Lens and do not count as first-try correct.</p>';
+  h += '<p class="small muted">Mastery uses first-try answers only: 4 = 90%+, 3 = 75–89%, 2 = 60–74%, 1 = below 60%. A topic needs 3 answers before it gets a level.</p>';
+  h += '<h3 style="margin-top:16px">COMPLETION CODE</h3><span class="codebox" id="codeBox">' + R.code + '</span>';
+  $("#reportBody").innerHTML = h;
+}
+$("#btnPrint").onclick = function(){ window.print(); };
+$("#btnPdf").onclick = function(){
+  var btn = this; btn.textContent = "LOADING…";
+  loadJsPDF().then(function(){ makePdf(); btn.textContent = "EXPORT PDF"; }).catch(function(){ btn.textContent = "EXPORT PDF"; alertBox(); window.print(); });
+};
+function alertBox(){ var n = document.createElement("div"); n.className = "notice noprint"; n.textContent = "The PDF tool couldn't load on this network, so the print window opened instead. Choose \"Save as PDF\" as the printer."; $("#reportBody").prepend(n); }
+function loadJsPDF(){
+  if (window.jspdf) return Promise.resolve();
+  return new Promise(function(res, rej){ var s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"; s.onload = function(){ window.jspdf ? res() : rej(); }; s.onerror = rej; document.head.appendChild(s); setTimeout(rej, 9000); });
+}
+function makePdf(){
+  var R = reportData(), a = R.all, doc = new window.jspdf.jsPDF({unit:"pt", format:"letter"}), y = 54, W = 612;
+  function hex(c){ return [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)]; }
+  function line(t, size, bold, x){ doc.setFont("helvetica", bold ? "bold" : "normal"); doc.setFontSize(size || 11); doc.text(String(t), x || 54, y); }
+  function need(h){ if (y + h > 740) { doc.addPage(); y = 54; } }
+  doc.setFillColor(27,16,51); doc.rect(0,0,W,34,"F"); doc.setTextColor(255,210,63); doc.setFont("helvetica","bold"); doc.setFontSize(14); doc.text("CRITICAL HIT! TRAINER REPORT", 54, 22); doc.setTextColor(27,16,51);
+  line(PROFILE.name, 18, true); y += 18;
+  line(CLS.name + (PROFILE.period ? "  ·  Period " + PROFILE.period : "") + "  ·  " + R.date, 11); y += 26;
+  var lv = level(a.pct, a.answered);
+  line("First-try accuracy: " + (a.pct == null ? "—" : a.pct + "%") + "    Mastery: " + lv.t, 12, true); y += 16;
+  line("Questions seen: " + a.answered + " of " + a.total + "    Recovered: " + a.recovered + "    Hint Lens: " + a.assisted + "    Badges: " + R.badges + "/" + CLS.units.length, 11); y += 26;
+  doc.setFillColor(27,16,51); doc.rect(54, y-12, W-108, 18, "F"); doc.setTextColor(255,255,255); line("UNIT / TOPIC", 9, true, 60); line("SEEN", 9, true, 330); line("FIRST TRY", 9, true, 380); line("MASTERY", 9, true, 470); doc.setTextColor(27,16,51); y += 18;
+  R.units.forEach(function(u){
+    need(20); var ul = level(u.s.pct, u.s.answered);
+    doc.setFillColor(243,233,210); doc.rect(54, y-12, W-108, 17, "F");
+    line(u.name.slice(0, 48), 10, true, 60); line(u.s.answered + "/" + u.s.total, 10, false, 330); line(u.s.pct == null ? "—" : u.s.pct + "%", 10, true, 380); line(ul.t, 9, true, 470); y += 18;
+    u.topics.forEach(function(t){
+      need(18); var tl = level(t.s.pct, t.s.answered);
+      line(t.name.slice(0, 46), 10, false, 72); line(t.s.answered + "/" + t.s.total, 10, false, 330);
+      doc.setDrawColor(27,16,51); doc.rect(380, y-9, 50, 9); var c = hex(tl.c); doc.setFillColor(c[0],c[1],c[2]); doc.rect(380, y-9, 50 * (t.s.pct || 0) / 100, 9, "F");
+      line(t.s.pct == null ? "—" : t.s.pct + "%", 9, false, 436); line(tl.t, 9, false, 470); y += 16;
+    });
+  });
+  y += 14; need(40); line("Terms to review", 12, true); y += 16;
+  if (!R.terms.length) { line("None right now.", 10); y += 14; }
+  else { var txt = R.terms.map(function(t){ return t.term + (t.code ? " (" + t.code + ")" : ""); }).join(",  "); doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.splitTextToSize(txt, W-108).forEach(function(l){ need(14); doc.text(l, 54, y); y += 13; }); }
+  y += 10; need(60);
+  doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.text("Mastery uses first-try answers only: 4 = 90%+, 3 = 75-89%, 2 = 60-74%, 1 = below 60%. A topic needs 3 answers before it gets a level.", 54, y); y += 22;
+  line("Completion code: " + R.code, 13, true);
+  var fn = ("critical-hit-" + PROFILE.name + "-" + CLS.id).replace(/[^a-z0-9-]+/gi, "-").toLowerCase() + ".pdf";
+  doc.save(fn); window.__lastPdf = doc.output("datauristring");
+}
+
+/* ===================== BOOT ===================== */
+applyMotion();
+(function titleMons(){ var t = $("#titleMons"); [0, 6, 11].forEach(function(i){ var im = document.createElement("img"); im.src = drawOriginal(i, false); im.alt = ORIG[i].name; t.appendChild(im); }); })();
+loadClasses().catch(function(){ CLASSES = []; });
+window.__CH = {get S(){ return S; }, get B(){ return B; }, get CLS(){ return CLS; }, POKE:POKE, drawOriginal:drawOriginal, ORIG:ORIG, stats:stats};
+document.addEventListener("keydown", function(e){ if ($("#title").classList.contains("on") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); $("#pressStart").click(); } });
+})();
+</script>
+</body>
+</html>

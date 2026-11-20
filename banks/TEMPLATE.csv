@@ -1,0 +1,4 @@
+id,unit,topic,term,dok,question,correct,wrong1,wrong2,wrong3,explanation,code
+U1-001,Unit 1 Example Unit,Example Topic A,firewall,1,What does a firewall do?,Filters traffic based on rules,Speeds up the internet,Stores passwords,Assigns IP addresses,A firewall allows or blocks traffic using rules.,1.1
+U1-002,Unit 1 Example Unit,Example Topic B,phishing,2,An email says your account is locked and asks you to log in through a link. What is this most likely?,Phishing,A software update,A firewall alert,Normal account maintenance,Urgent links that ask for a login are a classic phishing sign.,1.2
+U1-003,Unit 1 Example Unit,Example Topic B,true/false,1,True or false: a strong password should be reused on every account.,False,True,,,Reusing a password means one breach unlocks every account.,1.2
