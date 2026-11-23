@@ -70,6 +70,8 @@ button.card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 rgba(0,0,0
 .badge.off{filter:grayscale(1) brightness(.7)}
 .mon{display:grid;place-items:center;gap:4px;padding:10px;text-align:center}
 .mon img{width:128px;height:128px;image-rendering:pixelated}
+#starterGrid .mon img{width:96px;height:96px}
+#starterGrid .mon .no{font-family:var(--px);font-size:8px;color:#7a6a9a}
 .mon .nm{font-family:var(--px);font-size:10px}
 .mon.sel{background:var(--yellow);outline:4px solid var(--pink)}
 .chip{display:inline-block;font-family:var(--px);font-size:9px;padding:4px 6px;border:2px solid var(--ink);border-radius:4px;background:#fff;margin:2px}
@@ -208,8 +210,9 @@ th{font-family:var(--px);font-size:10px;background:var(--ink);color:#fff}
 <section id="starter" class="screen wrap">
   <div class="panel">
     <h2>CHOOSE YOUR TEAM</h2>
-    <p class="small" style="margin-top:0">Pick <b>3</b> partners. Each one knows different moves, and every move is a topic from your class. Switch partners in battle to reach other topics.</p>
-    <div class="grid" id="starterGrid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))"></div>
+    <p class="small" style="margin-top:0">Pick <b>3</b> partners from the original 151. Each one knows different moves, and every move is a topic from your class. Switch partners in battle to reach other topics.</p>
+    <div class="row" style="margin-bottom:12px"><input id="starterSearch" placeholder="Search by name or number (e.g. pikachu, 25)" aria-label="Search" style="flex:1;min-width:240px"><span id="pickedNames" class="small"></span></div>
+    <div class="grid" id="starterGrid" style="grid-template-columns:repeat(auto-fill,minmax(124px,1fr));max-height:62vh;overflow:auto;padding:4px"></div>
     <div class="row" style="margin-top:16px;justify-content:space-between">
       <span id="pickCount" class="px" style="font-size:11px">0 / 3</span>
       <button class="btn green" id="starterGo" disabled>LET'S GO ▶</button>
@@ -431,7 +434,7 @@ var ATTACKS = ["PACKET FLOOD","PORT SCAN","BRUTE FORCE","KEYLOGGER","BUFFER OVER
 var CHARGES = ["ZERO-DAY BLAST","HYPER FLOOD","ROOTKIT SURGE","RANSOM WAVE"];
 var LEADERS = ["LEADER ADA","LEADER KEV","LEADER MAYA","LEADER RAJ","LEADER LUZ","LEADER OTTO","LEADER NIA","LEADER BEN","LEADER ZOE","LEADER IKE"];
 var ELITE = ["ELITE DAX","ELITE ROSA","ELITE VANCE","ELITE JUNO"];
-var STARTERS = ["p1","p4","p7","p152","p155","p158","p252","p255","p258","o6","o3","o2"];
+var STARTERS = []; for (var sn = 1; sn <= 151; sn++) STARTERS.push("p" + sn);
 var WILD = [10,13,16,19,25,27,29,32,35,37,39,41,43,46,48,50,52,54,56,58,60,63,66,69,72,74,77,79,81,84,86,90,92,96,98,100,102,104,109,111,116,118,120,129,133,138,140,147,161,163,165,167,170,172,173,174,175,177,179,183,187,190,191,194,200,204,206,209,211,213,216,218,220,222,223,225,228,231,234,239,240,241,246,261,263,265,270,273,276,278,280,283,285,287,290,293,296,298,300,302,304,307,309,311,312,313,315,316,318,320,322,325,327,328,331,333,335,337,339,341,343,345,349,351,353,355,357,359,361,363,366,369,370,371,374];
 
 /* ===================== ORIGINAL CREATURES (code-drawn pixel art) ===================== */
@@ -595,7 +598,7 @@ function setSprite(img, c, back){
 function monCard(c, extra){
   var b = document.createElement("button"); b.className = "card mon"; b.type = "button";
   b.innerHTML = '<img alt=""><span class="nm">' + esc(c.name) + '</span><span>' + c.types.map(function(t){ return '<span class="chip">' + esc(t) + '</span>'; }).join("") + '</span>' + (extra || "");
-  setSprite(b.querySelector("img"), c, false); return b;
+  b.querySelector("img").loading = "lazy"; setSprite(b.querySelector("img"), c, false); return b;
 }
 
 /* ===================== BANK LOADING ===================== */
@@ -666,7 +669,7 @@ $("#teacherFile").onchange = function(){
   rd.readAsText(f); this.value = "";
 };
 function afterClass(){
-  if (S.team.length === 3) return loadPoke(teamIds()).then(toMap);
+  if (S.team.length === 3 && S.team.every(function(c){ return c[0] === "p"; })) return loadPoke(teamIds()).then(toMap);
   toStarter();
 }
 function teamIds(){ return S.team.concat(S.caught).filter(function(c){ return c[0] === "p"; }).map(function(c){ return +c.slice(1); }); }
@@ -674,23 +677,30 @@ function teamIds(){ return S.team.concat(S.caught).filter(function(c){ return c[
 /* ===================== STARTER ===================== */
 var picked = [];
 function toStarter(){
-  show("starter"); picked = [];
-  var grid = $("#starterGrid"); grid.innerHTML = '<p class="small">Loading partners…</p>';
-  loadPoke(STARTERS.filter(function(c){ return c[0] === "p"; }).map(function(c){ return +c.slice(1); })).then(function(){
+  show("starter"); picked = S.team.filter(function(c){ return c[0] === "p"; });
+  var grid = $("#starterGrid"); grid.innerHTML = '<p class="small">Loading the original 151…</p>';
+  $("#starterSearch").value = "";
+  function refresh(){
+    $("#pickCount").textContent = picked.length + " / 3"; $("#starterGo").disabled = picked.length !== 3;
+    $("#pickedNames").textContent = picked.map(function(c){ return creature(c).name; }).join(" · ");
+  }
+  loadPoke(STARTERS.map(function(c){ return +c.slice(1); })).then(function(){
     grid.innerHTML = "";
     STARTERS.forEach(function(cid){
-      var c = creature(cid), b = monCard(c);
-      b.setAttribute("aria-pressed", "false");
+      var c = creature(cid), num = ("00" + cid.slice(1)).slice(-3), b = monCard(c, '<span class="no">#' + num + '</span>');
+      b.dataset.k = (c.name + " " + num + " " + (+cid.slice(1))).toLowerCase();
+      b.classList.toggle("sel", picked.indexOf(cid) >= 0); b.setAttribute("aria-pressed", picked.indexOf(cid) >= 0);
       b.onclick = function(){
         var i = picked.indexOf(cid);
         if (i >= 0) picked.splice(i, 1); else if (picked.length < 3) picked.push(cid); else return;
-        sfx("blip"); b.classList.toggle("sel", picked.indexOf(cid) >= 0); b.setAttribute("aria-pressed", picked.indexOf(cid) >= 0);
-        $("#pickCount").textContent = picked.length + " / 3"; $("#starterGo").disabled = picked.length !== 3;
+        sfx("blip"); b.classList.toggle("sel", picked.indexOf(cid) >= 0); b.setAttribute("aria-pressed", picked.indexOf(cid) >= 0); refresh();
       };
       grid.appendChild(b);
     });
+    refresh();
   });
 }
+$("#starterSearch").oninput = function(){ var q = this.value.trim().toLowerCase(); $$("#starterGrid .mon").forEach(function(b){ b.style.display = !q || b.dataset.k.indexOf(q) >= 0 ? "" : "none"; }); };
 $("#starterGo").onclick = function(){ S.team = picked.slice(); picked.forEach(function(c){ if (S.caught.indexOf(c) < 0) S.caught.push(c); }); persist(); toMap(); };
 
 /* ===================== MAP ===================== */
@@ -721,7 +731,7 @@ function toMap(){
   var mg = $("#moreGrid"); mg.innerHTML = "";
   var rev = CLS.questions.filter(function(q){ var r = S.log[q.id]; return r && !r.f && !r.ok; }).length;
   [
-    {k:"WILD", t:"TALL GRASS", d:"Quick 1-on-1 battle with a wild creature. Win to catch it. (" + S.caught.length + " caught)", f:function(){ startBattle("wild"); }},
+    {k:"WILD", t:"TALL GRASS", d:"Quick 1-on-1 battle with a wild creature. Win to catch it. (" + S.caught.filter(function(c){ return c[0] === "p"; }).length + " caught)", f:function(){ startBattle("wild"); }},
     {k:"REVIEW", t:"REVIEW CENTER", d: rev ? rev + " missed question" + (rev === 1 ? "" : "s") + " waiting. Get them right to mark them recovered." : "Nothing to review right now.", f:toReview, done:false},
     {k:"MIXED", t:"ELITE FOUR", d:"Four trainers in a row, questions from every unit.", f:function(){ startBattle("elite"); }, done:S.beaten.elite},
     {k:"MOCK MIDTERM", t:"CHAMPION", d:"The final battle: about 25 questions across everything.", f:function(){ startBattle("champ"); }, done:S.beaten.champ}
@@ -730,7 +740,7 @@ function toMap(){
 $("#btnSound").onclick = function(){ PROFILE.sound = !PROFILE.sound; persist(); sfx("ok"); toMap(); };
 $("#btnSwitch").onclick = function(){ toStart(); };
 $("#btnReport").onclick = toReport;
-$("#btnTeam").onclick = function(){ toDex(true); };
+$("#btnTeam").onclick = function(){ sfx("blip"); toStarter(); };
 $("#btnDex").onclick = function(){ toDex(false); };
 $$("[data-back]").forEach(function(b){ b.onclick = function(){ sfx("blip"); toMap(); }; });
 
@@ -749,12 +759,12 @@ $("#oResetYes").onclick = function(){ S = blankSave(); persist(); $("#optModal")
 var teamDraft = [];
 function toDex(teamMode){
   show("dex"); $("#dexTitle").textContent = teamMode ? "CHOOSE TEAM" : "COLLECTION";
-  $("#dexHelp").textContent = teamMode ? "Pick any 3 creatures you've caught. Order = who goes out first." : "Every creature you've caught in this class: " + S.caught.length + ". Win wild battles and gyms to catch more.";
+  $("#dexHelp").textContent = teamMode ? "Pick any 3 creatures you've caught. Order = who goes out first." : "Every creature you've caught in this class: " + S.caught.filter(function(c){ return c[0] === "p"; }).length + ". Win Tall Grass battles to catch more. Use TEAM on the map to change your 3 partners.";
   $("#dexSave").style.display = teamMode ? "inline-block" : "none";
   teamDraft = S.team.slice();
   var g = $("#dexGrid"); g.innerHTML = "";
   loadPoke(teamIds()).then(function(){
-    S.caught.forEach(function(cid){
+    S.caught.filter(function(c){ return c[0] === "p"; }).forEach(function(cid){
       var b = monCard(creature(cid)); if (teamDraft.indexOf(cid) >= 0) b.classList.add("sel");
       if (teamMode) b.onclick = function(){ var i = teamDraft.indexOf(cid); if (i >= 0) teamDraft.splice(i,1); else if (teamDraft.length < 3) teamDraft.push(cid); b.classList.toggle("sel", teamDraft.indexOf(cid) >= 0); $("#dexSave").disabled = teamDraft.length !== 3; sfx("blip"); };
       else b.disabled = false;
@@ -996,7 +1006,6 @@ function win(){
     if (B.kind === "gym") { msgs.push("You beat " + trainerFor(0) + "! You earned the " + CLS.units[B.unitIdx].name + " badge!"); }
     else if (B.kind === "elite") msgs.push("You beat the Elite Four!");
     else msgs.push("You beat the Champion!");
-    if (S.caught.indexOf(sig) < 0) { S.caught.push(sig); msgs.push(B.opp[B.opp.length - 1].name + " joined your collection!"); }
   }
   S.cur = null; persist();
   var p = Promise.resolve();
