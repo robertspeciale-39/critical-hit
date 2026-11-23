@@ -39,6 +39,7 @@ label{font-family:var(--px);font-size:11px;display:block;margin:14px 0 6px}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;color:#fff}
 .topbar .brand{font-family:var(--px);font-size:14px;color:var(--yellow);text-shadow:3px 3px 0 var(--red)}
 .topbar .who{font-size:16px;opacity:.95}
+.sndbtn[aria-pressed="true"]{background:var(--green)}
 .iconbtn{color:var(--ink);font-family:var(--px);font-size:10px;padding:8px 10px;border:3px solid var(--ink);border-radius:6px;background:var(--paper);box-shadow:0 3px 0 var(--ink)}
 
 /* ---------- title ---------- */
@@ -234,7 +235,7 @@ th{font-family:var(--px);font-size:10px;background:var(--ink);color:#fff}
   <div class="topbar">
     <div><div class="brand">CRITICAL HIT!</div><div class="who" id="who"></div></div>
     <div class="row" style="gap:8px">
-      <button class="iconbtn" id="btnSound" aria-pressed="false">SOUND: OFF</button>
+      <button class="iconbtn sndbtn" id="btnSound" aria-pressed="false">SOUND OFF</button>
       <button class="iconbtn" id="btnOptions">OPTIONS</button>
       <button class="iconbtn" id="btnSwitch">SWITCH CLASS</button>
     </div>
@@ -259,6 +260,7 @@ th{font-family:var(--px);font-size:10px;background:var(--ink);color:#fff}
 
 <!-- BATTLE -->
 <section id="battle" class="screen wrap">
+  <div class="row" style="justify-content:flex-end;margin-bottom:8px"><button class="iconbtn sndbtn" id="btnSoundB" aria-pressed="false">SOUND OFF</button></div>
   <div class="stage" id="stage">
     <div class="plat opp"></div><div class="plat me"></div>
     <img class="sprite" id="oppSprite" alt="">
@@ -328,7 +330,7 @@ th{font-family:var(--px);font-size:10px;background:var(--ink);color:#fff}
     <h2>OPTIONS</h2>
     <div class="toggle"><span>Reduce motion</span><button class="iconbtn" id="oMotion"></button></div>
     <div class="toggle"><span>Assist mode (take half damage)</span><button class="iconbtn" id="oAssist"></button></div>
-    <div class="toggle"><span>Sound effects</span><button class="iconbtn" id="oSound"></button></div>
+    <div class="toggle"><span>Sound (battle music + effects)</span><button class="iconbtn" id="oSound"></button></div>
     <div class="toggle"><span>Reset progress for this class</span><button class="iconbtn" id="oReset" style="background:var(--red);color:#fff">RESET</button></div>
     <div id="resetConfirm" class="notice" style="display:none">This erases this class's answers, badges and collection on this computer. <div class="row" style="margin-top:8px"><button class="btn red" id="oResetYes">YES, ERASE</button><button class="btn ghost" id="oResetNo">CANCEL</button></div></div>
     <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn green" id="optClose">DONE</button></div>
@@ -723,7 +725,20 @@ function shuffle(a){ a = a.slice(); for (var i=a.length-1;i>0;i--){ var j=Math.f
 function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
 function wait(ms){ return new Promise(function(r){ setTimeout(r, FAST ? Math.min(ms, 5) : ms); }); }
-function show(id){ $$(".screen").forEach(function(s){ s.classList.toggle("on", s.id === id); }); window.scrollTo(0,0); }
+function show(id){ $$(".screen").forEach(function(s){ s.classList.toggle("on", s.id === id); }); window.scrollTo(0,0); musicSync(); }
+/* ---- battle music: loops only on the battle screen, only when SOUND is on ---- */
+var MUSIC = new Audio(); MUSIC.loop = true; MUSIC.volume = 0.35; MUSIC.preload = "none";
+function musicSync(){
+  var want = PROFILE.sound && !document.hidden && $("#battle").classList.contains("on");
+  try {
+    if (want && MUSIC.paused) { if (!MUSIC.src) MUSIC.src = "audio/critical-hit.mp3"; var p = MUSIC.play(); if (p && p.catch) p.catch(function(){}); }
+    else if (!want && !MUSIC.paused) MUSIC.pause();
+  } catch(e){}
+}
+function musicRestart(){ try { if (MUSIC.src) MUSIC.currentTime = 0; } catch(e){} }
+document.addEventListener("visibilitychange", musicSync);
+function soundUI(){ $$(".sndbtn").forEach(function(b){ b.textContent = PROFILE.sound ? "SOUND ON" : "SOUND OFF"; b.setAttribute("aria-pressed", !!PROFILE.sound); }); }
+function setSound(on){ PROFILE.sound = on; persist(); soundUI(); musicSync(); if (on) sfx("ok"); }
 function applyMotion(){ document.body.classList.toggle("reduce", !!PROFILE.reduce); }
 function wipe(){ if (PROFILE.reduce || FAST) return Promise.resolve(); var w = $("#wipe"); w.classList.remove("on"); void w.offsetWidth; w.classList.add("on"); return wait(380).then(function(){ setTimeout(function(){ w.classList.remove("on"); }, 400); }); }
 function title(s){ return String(s).toUpperCase().replace(/-/g, " "); }
@@ -875,7 +890,7 @@ $("#starterGo").onclick = function(){ S.team = picked.slice(); picked.forEach(fu
 function toMap(){
   show("map");
   $("#who").textContent = PROFILE.name + (PROFILE.period ? " · Period " + PROFILE.period : "") + " · " + CLS.name;
-  $("#btnSound").textContent = "SOUND: " + (PROFILE.sound ? "ON" : "OFF"); $("#btnSound").setAttribute("aria-pressed", !!PROFILE.sound);
+  soundUI();
   var note = CLS.questions.length + " questions in " + CLS.units.length + " unit" + (CLS.units.length === 1 ? "" : "s") + ".";
   if (CLS.skipped) note += " " + CLS.skipped + " row(s) in the bank had errors and were skipped.";
   if (pokeFailed) note += " Creature data couldn't load, so original creatures are filling in.";
@@ -905,7 +920,8 @@ function toMap(){
     {k:"MOCK MIDTERM", t:"CHAMPION", d:"The final battle: about 25 questions across everything.", f:function(){ startBattle("champ"); }, done:S.beaten.champ}
   ].forEach(function(x){ var b = document.createElement("button"); b.className = "card" + (x.done ? " done" : ""); b.type = "button"; b.innerHTML = '<div class="k">' + x.k + '</div><div class="t">' + x.t + '</div><div class="d">' + x.d + '</div>'; b.onclick = x.f; mg.appendChild(b); });
 }
-$("#btnSound").onclick = function(){ PROFILE.sound = !PROFILE.sound; persist(); sfx("ok"); toMap(); };
+$("#btnSound").onclick = function(){ setSound(!PROFILE.sound); };
+$("#btnSoundB").onclick = function(){ setSound(!PROFILE.sound); this.blur(); };
 $("#btnSwitch").onclick = function(){ toStart(); };
 $("#btnReport").onclick = toReport;
 $("#btnTeam").onclick = function(){ sfx("blip"); toStarter(); };
@@ -918,7 +934,7 @@ $("#btnOptions").onclick = function(){ renderOpts(); $("#resetConfirm").style.di
 $("#optClose").onclick = function(){ $("#optModal").classList.remove("on"); toMap(); };
 $("#oMotion").onclick = function(){ PROFILE.reduce = !PROFILE.reduce; applyMotion(); persist(); renderOpts(); };
 $("#oAssist").onclick = function(){ PROFILE.assist = !PROFILE.assist; persist(); renderOpts(); };
-$("#oSound").onclick = function(){ PROFILE.sound = !PROFILE.sound; persist(); renderOpts(); sfx("ok"); };
+$("#oSound").onclick = function(){ setSound(!PROFILE.sound); renderOpts(); };
 $("#oReset").onclick = function(){ $("#resetConfirm").style.display = "block"; };
 $("#oResetNo").onclick = function(){ $("#resetConfirm").style.display = "none"; };
 $("#oResetYes").onclick = function(){ S = blankSave(); persist(); $("#optModal").classList.remove("on"); toStarter(); };
@@ -975,7 +991,8 @@ function startBattle(kind, unitIdx){
 function resumeBattle(cur){ B = cur; loadPoke(teamIds().concat(B.opp.filter(function(o){ return o.cid[0]==="p"; }).map(function(o){ return +o.cid.slice(1); }))).then(function(){ wipe().then(function(){ enterBattle(false); }); }); }
 function trainerFor(i){ if (!B.trainers.length) return null; return B.trainers[Math.min(i, B.trainers.length - 1)]; }
 function enterBattle(fresh){
-  show("battle");
+  if (fresh) musicRestart();
+  soundUI(); show("battle");
   $("#stage").className = "stage " + ({gym:"gym", elite:"elite", champ:"champ"}[B.kind] || "");
   $("#mRun").disabled = B.kind !== "wild";
   hideMoves(); drawAll();
@@ -1295,7 +1312,7 @@ function makePdf(){
 applyMotion();
 (function titleMons(){ var t = $("#titleMons"); [0, 6, 11].forEach(function(i){ var im = document.createElement("img"); im.src = drawOriginal(i, false); im.alt = ORIG[i].name; t.appendChild(im); }); })();
 loadClasses().catch(function(){ CLASSES = []; });
-window.__CH = {playFx:function(k,big,rev){ return playFx(k, rev ? $('#oppSprite') : $('#meSprite'), rev ? $('#meSprite') : $('#oppSprite'), big); }, banner:function(t,c){ return banner(t,c); }, fxKind:fxKind, get S(){ return S; }, get B(){ return B; }, get CLS(){ return CLS; }, POKE:POKE, drawOriginal:drawOriginal, ORIG:ORIG, stats:stats};
+window.__CH = {get music(){ return MUSIC; }, playFx:function(k,big,rev){ return playFx(k, rev ? $('#oppSprite') : $('#meSprite'), rev ? $('#meSprite') : $('#oppSprite'), big); }, banner:function(t,c){ return banner(t,c); }, fxKind:fxKind, get S(){ return S; }, get B(){ return B; }, get CLS(){ return CLS; }, POKE:POKE, drawOriginal:drawOriginal, ORIG:ORIG, stats:stats};
 document.addEventListener("keydown", function(e){ if ($("#title").classList.contains("on") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); $("#pressStart").click(); } });
 })();
 </script>
