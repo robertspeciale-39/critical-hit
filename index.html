@@ -261,7 +261,7 @@ th{font-family:var(--px);font-size:10px;background:var(--ink);color:#fff}
 
 <!-- BATTLE -->
 <section id="battle" class="screen wrap">
-  <div class="row" style="justify-content:flex-end;margin-bottom:8px"><button class="iconbtn sndbtn" id="btnSoundB" aria-pressed="false">SOUND OFF</button></div>
+  <div class="row" style="justify-content:space-between;margin-bottom:8px"><button class="iconbtn" id="btnLeave" title="Save this battle and go back to the map. Resume it any time.">◀ MAP (SAVE &amp; EXIT)</button><span id="leaveMsg" class="small" style="color:#fff"></span><button class="iconbtn sndbtn" id="btnSoundB" aria-pressed="false">SOUND OFF</button></div>
   <div class="stage" id="stage">
     <div class="plat opp"></div><div class="plat me"></div>
     <img class="sprite" id="oppSprite" alt="">
@@ -1075,6 +1075,11 @@ function teamMenu(forced){
   if (!forced) { var back = document.createElement("button"); back.className = "move"; back.style.setProperty("--c", "#1b1033"); back.textContent = "◀ BACK"; back.onclick = function(){ hideMoves(); prompt(); }; mv.appendChild(back); }
   $("#menu").style.display = "none"; $(".dock").classList.add("picking"); mv.classList.add("on"); var f = mv.querySelector("button:not(:disabled)"); if (f) f.focus();
 }
+$("#btnLeave").onclick = function(){
+  this.blur();
+  if (busy) { $("#leaveMsg").textContent = "Finish this turn first…"; setTimeout(function(){ $("#leaveMsg").textContent = ""; }, 1500); return; }
+  sfx("blip"); hideMoves(); S.cur = B; persist(); wipe().then(toMap);
+};
 $("#mRun").onclick = function(){ if (busy || B.kind !== "wild") return; busy = true; hideMoves(); say("Got away safely!").then(function(){ busy = false; S.cur = null; persist(); wipe().then(toMap); }); };
 
 function pickQuestion(cat){
