@@ -218,6 +218,7 @@ th{font-family:var(--px);font-size:10px;background:var(--ink);color:#fff}
 
 <!-- STARTER -->
 <section id="starter" class="screen wrap">
+  <div class="row" style="justify-content:flex-end;margin-bottom:8px"><button class="iconbtn sndbtn" id="btnSoundS" aria-pressed="false">SOUND OFF</button></div>
   <div class="panel">
     <h2>CHOOSE YOUR TEAM</h2>
     <p class="small" style="margin-top:0">Pick <b>3</b> partners from the original 151. Each one knows different moves, and every move is a topic from your class. Switch partners in battle to reach other topics.</p>
@@ -330,7 +331,7 @@ th{font-family:var(--px);font-size:10px;background:var(--ink);color:#fff}
     <h2>OPTIONS</h2>
     <div class="toggle"><span>Reduce motion</span><button class="iconbtn" id="oMotion"></button></div>
     <div class="toggle"><span>Assist mode (take half damage)</span><button class="iconbtn" id="oAssist"></button></div>
-    <div class="toggle"><span>Sound (battle music + effects)</span><button class="iconbtn" id="oSound"></button></div>
+    <div class="toggle"><span>Sound (music + effects)</span><button class="iconbtn" id="oSound"></button></div>
     <div class="toggle"><span>Reset progress for this class</span><button class="iconbtn" id="oReset" style="background:var(--red);color:#fff">RESET</button></div>
     <div id="resetConfirm" class="notice" style="display:none">This erases this class's answers, badges and collection on this computer. <div class="row" style="margin-top:8px"><button class="btn red" id="oResetYes">YES, ERASE</button><button class="btn ghost" id="oResetNo">CANCEL</button></div></div>
     <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn green" id="optClose">DONE</button></div>
@@ -726,16 +727,20 @@ function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
 function wait(ms){ return new Promise(function(r){ setTimeout(r, FAST ? Math.min(ms, 5) : ms); }); }
 function show(id){ $$(".screen").forEach(function(s){ s.classList.toggle("on", s.id === id); }); window.scrollTo(0,0); musicSync(); }
-/* ---- battle music: loops only on the battle screen, only when SOUND is on ---- */
-var MUSIC = new Audio(); MUSIC.loop = true; MUSIC.volume = 0.35; MUSIC.preload = "none";
+/* ---- music: Critical Battle on the battle screen, Critical Hit on the team picker; only when SOUND is on ---- */
+var TRACKS = {battle:"audio/critical-battle.mp3", starter:"audio/critical-hit.mp3"}, PLAYERS = {};
+function player(k){ if (!PLAYERS[k]) { var a = new Audio(); a.loop = true; a.volume = 0.35; a.preload = "none"; PLAYERS[k] = a; } return PLAYERS[k]; }
 function musicSync(){
-  var want = PROFILE.sound && !document.hidden && $("#battle").classList.contains("on");
-  try {
-    if (want && MUSIC.paused) { if (!MUSIC.src) MUSIC.src = "audio/critical-hit.mp3"; var p = MUSIC.play(); if (p && p.catch) p.catch(function(){}); }
-    else if (!want && !MUSIC.paused) MUSIC.pause();
-  } catch(e){}
+  var on = $(".screen.on"), want = PROFILE.sound && !document.hidden && on && TRACKS[on.id] ? on.id : null;
+  Object.keys(TRACKS).forEach(function(k){
+    try {
+      var a = player(k);
+      if (k === want) { if (a.paused) { if (!a.src) a.src = TRACKS[k]; var p = a.play(); if (p && p.catch) p.catch(function(){}); } }
+      else if (!a.paused) a.pause();
+    } catch(e){}
+  });
 }
-function musicRestart(){ try { if (MUSIC.src) MUSIC.currentTime = 0; } catch(e){} }
+function musicRestart(){ try { var a = player("battle"); if (a.src) a.currentTime = 0; } catch(e){} }
 document.addEventListener("visibilitychange", musicSync);
 function soundUI(){ $$(".sndbtn").forEach(function(b){ b.textContent = PROFILE.sound ? "SOUND ON" : "SOUND OFF"; b.setAttribute("aria-pressed", !!PROFILE.sound); }); }
 function setSound(on){ PROFILE.sound = on; persist(); soundUI(); musicSync(); if (on) sfx("ok"); }
@@ -860,7 +865,7 @@ function teamIds(){ return S.team.concat(S.caught).filter(function(c){ return c[
 /* ===================== STARTER ===================== */
 var picked = [];
 function toStarter(){
-  show("starter"); picked = S.team.filter(function(c){ return c[0] === "p"; });
+  soundUI(); show("starter"); picked = S.team.filter(function(c){ return c[0] === "p"; });
   var grid = $("#starterGrid"); grid.innerHTML = '<p class="small">Loading the original 151…</p>';
   $("#starterSearch").value = "";
   function refresh(){
@@ -922,6 +927,7 @@ function toMap(){
 }
 $("#btnSound").onclick = function(){ setSound(!PROFILE.sound); };
 $("#btnSoundB").onclick = function(){ setSound(!PROFILE.sound); this.blur(); };
+$("#btnSoundS").onclick = function(){ setSound(!PROFILE.sound); this.blur(); };
 $("#btnSwitch").onclick = function(){ toStart(); };
 $("#btnReport").onclick = toReport;
 $("#btnTeam").onclick = function(){ sfx("blip"); toStarter(); };
@@ -1312,7 +1318,7 @@ function makePdf(){
 applyMotion();
 (function titleMons(){ var t = $("#titleMons"); [0, 6, 11].forEach(function(i){ var im = document.createElement("img"); im.src = drawOriginal(i, false); im.alt = ORIG[i].name; t.appendChild(im); }); })();
 loadClasses().catch(function(){ CLASSES = []; });
-window.__CH = {get music(){ return MUSIC; }, playFx:function(k,big,rev){ return playFx(k, rev ? $('#oppSprite') : $('#meSprite'), rev ? $('#meSprite') : $('#oppSprite'), big); }, banner:function(t,c){ return banner(t,c); }, fxKind:fxKind, get S(){ return S; }, get B(){ return B; }, get CLS(){ return CLS; }, POKE:POKE, drawOriginal:drawOriginal, ORIG:ORIG, stats:stats};
+window.__CH = {get music(){ return player("battle"); }, get teamMusic(){ return player("starter"); }, playFx:function(k,big,rev){ return playFx(k, rev ? $('#oppSprite') : $('#meSprite'), rev ? $('#meSprite') : $('#oppSprite'), big); }, banner:function(t,c){ return banner(t,c); }, fxKind:fxKind, get S(){ return S; }, get B(){ return B; }, get CLS(){ return CLS; }, POKE:POKE, drawOriginal:drawOriginal, ORIG:ORIG, stats:stats};
 document.addEventListener("keydown", function(e){ if ($("#title").classList.contains("on") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); $("#pressStart").click(); } });
 })();
 </script>
