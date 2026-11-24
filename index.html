@@ -1083,12 +1083,23 @@ $("#btnLeave").onclick = function(){
 $("#mRun").onclick = function(){ if (busy || B.kind !== "wild") return; busy = true; hideMoves(); say("Got away safely!").then(function(){ busy = false; S.cur = null; persist(); wipe().then(toMap); }); };
 
 function pickQuestion(cat){
-  var pool = qsIn(cat), fresh = pool.filter(function(q){ return !B.used[q.id]; });
-  if (!fresh.length) { pool.forEach(function(q){ delete B.used[q.id]; }); fresh = pool; }
+  /* Variety rules: 1) never repeat inside a battle while anything unused exists: topic first, then the rest of
+     the unit, then the whole class bank; 2) skip the last ~20 questions asked in earlier battles when possible;
+     3) unseen questions first, then missed ones, then the ones asked longest ago. */
+  var recent = S.recent || (S.recent = []);
+  var pools = [qsIn(cat), qsIn({unit:cat.unit}), CLS.questions], fresh = null;
+  for (var i = 0; i < pools.length && !fresh; i++) { var f = pools[i].filter(function(q){ return !B.used[q.id]; }); if (f.length) fresh = f; }
+  if (!fresh) { B.used = {}; fresh = qsIn(cat); }
+  var notRecent = fresh.filter(function(q){ return recent.indexOf(q.id) < 0; });
+  if (notRecent.length) fresh = notRecent;
   var tier = function(q){ var r = S.log[q.id]; if (!r) return 0; if (!r.f && !r.ok) return 1; return 2; };
   var best = Math.min.apply(null, fresh.map(tier));
-  var q = pick(fresh.filter(function(x){ return tier(x) === best; }));
-  B.used[q.id] = 1; return q;
+  var cands = fresh.filter(function(x){ return tier(x) === best; });
+  if (best > 0) { cands.sort(function(a, b){ return (S.log[a.id].t || 0) - (S.log[b.id].t || 0); }); cands = cands.slice(0, 3); }
+  var q = pick(cands);
+  B.used[q.id] = 1;
+  recent.push(q.id); var keep = Math.max(4, Math.min(20, Math.floor(CLS.questions.length / 3))); if (recent.length > keep) S.recent = recent.slice(-keep);
+  return q;
 }
 function record(q, correct, assisted){
   var r = S.log[q.id];
@@ -1136,7 +1147,7 @@ function useMove(k){
   var assisted = B.lens; B.lens = false;
   var q = pickQuestion(cat), o = B.opp[B.oi];
   persist();
-  say(m.name + " used " + cat.label.toUpperCase() + "!").then(function(){ return ask(q, cat.label, assisted); }).then(function(ok){
+  say(m.name + " used " + cat.label.toUpperCase() + "!").then(function(){ return ask(q, cat.topic && q.topic !== cat.topic ? q.topic : (cat.topic ? cat.label : q.topic), assisted); }).then(function(ok){
     record(q, ok, assisted);
     B.turn++;
     if (ok) return hitOpp(cat, q);
